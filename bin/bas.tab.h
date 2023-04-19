@@ -54,7 +54,8 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    INTEGER = 258                  /* INTEGER  */
+    INTEGER = 258,                 /* INTEGER  */
+    ID = 259                       /* ID  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -63,12 +64,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 8 "bas.y"
+#line 14 "bas.y"
 
     int intVal;
+    char* stringVal;
     double doubleVal;
 
-#line 72 "bas.tab.h"
+#line 74 "bas.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
