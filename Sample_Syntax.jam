@@ -1,0 +1,78 @@
+int a = 1*2;
+const int b = 1;
+double c = 1.1+2.3;
+bool d = a==b;
+string e = "Jam";
+
+
+
+if(a==b)
+{
+    b = b+c;
+}
+else
+{
+    b = b-c;
+}
+if(a==b)
+{
+    if(a<b)
+    {
+        a=1;
+    }
+}
+else
+{
+    if(a>b)
+    {
+        a=2;
+    }
+    else
+    {
+        a=3;
+    }
+}
+
+
+while(a>b)
+{
+    c = c+1;
+}
+repeat
+{
+    c = c-1;
+}until(a==0); ඞ ; is Optional
+    ඞ empty         ඞ empty
+for(int i = 0; i<b ;i=i+1) ඞ This one is trouble
+{
+    c = c+1;
+}
+switch(c)
+{
+    case 2.1:
+    a=1;
+    case 1.2:
+    a=0;
+}
+
+
+{
+    ඞ Block Structure
+    int a = 3;
+}
+
+
+enum week {
+    Sunday,
+    Monday,
+    Tuesday
+}; ඞ ; is Optional
+
+week y = Sunday; ඞ Optional
+int x = week.Sunday;
+func(int a, string g)
+{
+    a = 2;
+    g = "foo";
+}
+func(a,e);

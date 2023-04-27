@@ -4,9 +4,13 @@
     #include "bas.tab.h"
 %}
 digit           [0-9]
+symbols         [-+*/=&^|();]
 whitespace      [ \t\n]
 alpha           [a-zA-z]  
 %%
+{symbols}                                                   {   
+                                                                return *yytext;
+                                                            }
 ({alpha}|_)({alpha}|{digit}|_)*                             {
                                                                 yylval.stringVal = strdup(yytext);
                                                                 return ID;
@@ -14,9 +18,6 @@ alpha           [a-zA-z]
 {digit}+                                                    {
                                                                 yylval.intVal = atoi(yytext);
                                                                 return INTEGER;
-                                                            }
-[-+;*/=()]                                                  {   
-                                                                return *yytext;
                                                             }
 {whitespace}                                                ;
 .                                                           yyerror("Invalid Character");

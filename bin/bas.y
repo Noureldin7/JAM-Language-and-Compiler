@@ -8,7 +8,6 @@
     int yylex(void);
     void yyerror(char const *);
     unordered_map<string,int> symbol_table;
-    // symbol_table[]
     extern FILE* yyin;
 %}
 %union {
@@ -17,12 +16,12 @@
     double doubleVal;
 }
 %token <intVal> INTEGER <stringVal> ID
-/* %type <intVal> statement */
-/* %type <stringVal> assignment */
-%type <intVal> expr
-%type <intVal> term
+%type <intVal> expr_AND
+%type <intVal> expr_XOR
+%type <intVal> expr_OR
+%type <intVal> expr_ADD
+%type <intVal> expr_MUL
 %type <intVal> literal
-%left '-' '+'
 %%
 root:
     root statement ';'           {;}
@@ -33,21 +32,33 @@ statement:
     |
     ID                           {cout<<symbol_table[string($1)]<<endl;}
 assignment:
-    ID '=' expr             {symbol_table[string($1)] = $3;}
-expr:
-    expr '+' term           {$$ = $1 + $3;}
+    ID '=' expr_OR             {symbol_table[string($1)] = $3;}
+expr_OR:
+    expr_OR '|' expr_XOR           {$$ = $1 | $3;}
     |
-    expr '-' term           {$$ = $1 - $3;}
+    expr_XOR                         {$$ = $1;}
+expr_XOR:
+    expr_XOR '^' expr_AND           {$$ = $1 ^ $3;}
     |
-    term                         {$$ = $1;}
-term:
-    term '*' literal             {$$ = $1 * $3;}
+    expr_AND                         {$$ = $1;}
+expr_AND:
+    expr_AND '&' expr_ADD           {$$ = $1 & $3;}
     |
-    term '/' literal             {$$ = $1 / $3;}
+    expr_ADD                         {$$ = $1;}
+expr_ADD:
+    expr_ADD '+' expr_MUL           {$$ = $1 + $3;}
+    |
+    expr_ADD '-' expr_MUL           {$$ = $1 - $3;}
+    |
+    expr_MUL                         {$$ = $1;}
+expr_MUL:
+    expr_MUL '*' literal             {$$ = $1 * $3;}
+    |
+    expr_MUL '/' literal             {$$ = $1 / $3;}
     |
     literal                      {$$ = $1;}
     |
-    '(' expr ')'                 {$$ = $2;}
+    '(' expr_OR ')'                 {$$ = $2;}
 literal:
     INTEGER                      {$$ = $1;}
     |
