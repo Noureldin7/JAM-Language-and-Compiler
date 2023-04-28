@@ -1,4 +1,13 @@
-x = 6;
-y = 4;
-z = x + (y ^ x) | 3;
-z;
+int a = 1*2;
+ඞconst int b = 1;
+double c = 1.1+2.3;
+bool d = a==b;
+string e = "Jam";
+while(a>b)
+{
+    c = c+1;
+}
+repeat
+{
+    c = c-1;
+}until(a==0);
