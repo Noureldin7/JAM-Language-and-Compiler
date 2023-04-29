@@ -16,10 +16,11 @@
     double doubleVal;
 }
 // Reserved Words
-%token FOR WHILE REPEAT UNTIL EQ NE GT LT GTE LTE AND OR CONST INT DOUBLE STRING BOOL COMMENT
-%token <intVal> INT_VAL <stringVal> ID <doubleVal> DOUBLE_VAL <stringVal> STRING_VAL
-%type <char*> for_loop_stmt_1
-%type <char*> for_loop_stmt_2
+%token FOR WHILE REPEAT UNTIL EQ NE GT LT GTE LTE AND OR CONST INT DOUBLE STRING BOOL
+%token IF ELSE SWITCH CASE DEFAULT BREAK
+%token <intVal> INT_VAL <stringVal> ID <doubleVal> DOUBLE_VAL <stringVal> STRING_VAL <stringVal> SINGLE_CHAR
+%type <stringVal> for_loop_stmt_1
+%type <stringVal> for_loop_stmt_2
 %type <intVal> expr
 %type <intVal> expr_AND
 %type <intVal> expr_bitwise_OR
@@ -43,8 +44,11 @@ statement:
     |
     initialization ';'                  {cout<<"Initialization"<<endl;}
     |
+    if_statement                        {cout << "IF statement Detected" <<endl;}
+    |
+    switch_statement                    {cout << "SWITCH statement Detected" <<endl;}
     // declaration ';'                  {cout<<"Declaration"<<endl;}
-    // |
+    |
     assignment ';'                  {cout<<"Assignment"<<endl;}
     |
     ID                           {cout<<symbol_table[string($1)]<<endl;}
@@ -82,10 +86,31 @@ cond:
     cond LTE literal                  {;}
     |
     literal                             {;}
+;
 initialization:
     CONST type ID '=' expr       {symbol_table[string($3)] = $5;}
     |
     type ID '=' expr             {symbol_table[string($2)] = $4;}
+;
+if_statement:
+        IF '(' expr ')' '{' root '}'
+        | IF '(' expr ')' '{' root '}' ELSE '{' root '}'
+;
+switch_statement:
+    SWITCH '(' expr ')' '{' switch_body '}'
+;
+switch_body:  case_stmts
+    | case_stmts default_stmt
+;
+case_stmts: case_stmts case_stmt
+        | case_stmt
+;
+case_stmt: CASE literal ':' root BREAK ';'
+;
+default_stmt: DEFAULT ':' root BREAK ';'
+;
+/* const_expr: INT_VAL | DOUBLE_VAL | SINGLE_CHAR | STRING_VAL
+; */
 // declaration:
 //     CONST type ID             {symbol_table[string($3)] = ;} //TODO: modify symbol table to accept an uninitialized variable
 //     |
@@ -162,14 +187,15 @@ literal:
     |
     DOUBLE_VAL                      {;}
     |
+    SINGLE_CHAR                      {;}
+    |
     STRING_VAL                      {;}
     |
     ID                           {$$ = symbol_table[string($1)];}
 %%
-void yyerror(char const*s)
-{
-    printf("%s\n",s);
-    exit(-1);
+void yyerror(char const *s){
+    extern int yylineno;
+    printf("%s near line  %d ",s,yylineno);  
 }
 int main(int argc, char * argv[])
 {

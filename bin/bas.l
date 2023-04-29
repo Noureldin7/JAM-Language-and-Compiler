@@ -3,11 +3,12 @@
     void yyerror(char const*);
     #include "bas.tab.h"
 %}
+%option yylineno
 digit           [0-9]
-symbols         [-+*/=&^!|(){};]
+symbols         [-+*/=&^!|(){};:]
 whitespace      [ \t\n\r]
 alpha           [a-zA-z]  
-string          \"({digit}|{alpha})*\"
+string          \"({digit}|\.|{alpha})*\"
 %%
 const                                                       {return CONST;}
 int                                                         {return INT;}
@@ -26,6 +27,13 @@ for                                                         {return FOR;}
 while                                                       {return WHILE;}
 repeat                                                      {return REPEAT;}
 until                                                       {return UNTIL;}
+if                                                          {return IF;}
+else                                                        {return ELSE;}
+switch                                                      {return SWITCH;}
+case                                                        {return CASE;}
+break                                                       {return BREAK;}
+default                                                     {return DEFAULT;}
+\'.\'                                                       {return SINGLE_CHAR;}
 (ඞ[^\n\r]*)                                                 ;
 {symbols}                                                   {return *yytext;}
 {string}                                                    {
