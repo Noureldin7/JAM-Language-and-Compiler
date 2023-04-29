@@ -5,7 +5,7 @@
 %}
 %option yylineno
 digit           [0-9]
-symbols         [-+*/=&^!|(){};:]
+symbols         [-+*/=&^!|(){};:,]
 whitespace      [ \t\n\r]
 alpha           [a-zA-z]  
 string          \"({digit}|\.|{alpha})*\"
@@ -33,6 +33,8 @@ switch                                                      {return SWITCH;}
 case                                                        {return CASE;}
 break                                                       {return BREAK;}
 default                                                     {return DEFAULT;}
+void                                                        {return VOID;}
+return                                                      {return RETURN;}
 \'.\'                                                       {return SINGLE_CHAR;}
 (ඞ[^\n\r]*)                                                 ;
 {symbols}                                                   {return *yytext;}

@@ -4,6 +4,7 @@
     #include <iostream>
     #include <unordered_map>
     #include <string>
+    #include <cstring>
     using namespace std;
     int yylex(void);
     void yyerror(char const *);
@@ -16,7 +17,7 @@
     double doubleVal;
 }
 // Reserved Words
-%token FOR WHILE REPEAT UNTIL EQ NE GT LT GTE LTE AND OR CONST INT DOUBLE STRING BOOL
+%token FOR WHILE REPEAT UNTIL EQ NE GT LT GTE LTE AND OR CONST INT DOUBLE STRING BOOL VOID RETURN
 %token IF ELSE SWITCH CASE DEFAULT BREAK
 %token <intVal> INT_VAL <stringVal> ID <doubleVal> DOUBLE_VAL <stringVal> STRING_VAL <stringVal> SINGLE_CHAR
 %type <stringVal> for_loop_stmt_1
@@ -30,6 +31,7 @@
 %type <intVal> expr_ADD
 %type <intVal> expr_MUL
 %type <intVal> literal
+%type <stringVal> type
 %%
 root:
     root statement           {;}
@@ -41,6 +43,10 @@ statement:
     for_loop                            {cout<<"For Loop Detected"<<endl;}
     |
     while_loop                   {cout<<"While Loop Detected"<<endl;}
+    |
+    function_declaration                {;}
+    |
+    function_call ';'                   {;}
     |
     initialization ';'                  {cout<<"Initialization"<<endl;}
     |
@@ -87,6 +93,49 @@ cond:
     |
     literal                             {;}
 ;
+function_call:
+    ID '(' function_call_parameters_optional ')'                                {cout << "function " << $1 << " called" << endl;}
+;
+function_call_parameters_optional:
+    function_call_parameters
+    |
+                                                                                {;}
+;
+function_call_parameters:
+    function_call_parameters ',' function_call_parameter                        {;}
+    |
+    function_call_parameter
+;
+function_call_parameter:
+    ID                                                                          {;}
+;
+function_declaration:
+    VOID ID '(' function_declaration_parameters_optional ')' '{' function_body '}'       {cout << $2 <<" function returns void" << endl;}
+    |
+    type ID '(' function_declaration_parameters_optional ')' '{' function_body '}'       {cout << $2 <<" function returns " << $1 << endl;}
+;
+function_declaration_parameters_optional:
+    function_declaration_parameters                                             {;}
+    |
+                                                                                {cout << "function with no arguments" << endl;}
+;
+function_declaration_parameters:
+    function_declaration_parameters ',' function_declaration_parameter          {;}
+    |
+    function_declaration_parameter                                              {;}
+;
+function_declaration_parameter:
+    type ID                                                                     {cout << "function argument: " << $1 << ' ' << $2 << endl;}
+;
+function_body:
+    function_body statement                                                     {;}
+    |
+    function_body return_statement                                               {;}
+    |
+;
+return_statement:
+    RETURN expr ';'                                                              {;}
+;
 initialization:
     CONST type ID '=' expr       {symbol_table[string($3)] = $5;}
     |
@@ -118,13 +167,13 @@ default_stmt: DEFAULT ':' root BREAK ';'
 assignment:
     ID '=' expr             {symbol_table[string($1)] = $3;}
 type:
-    INT                         {;}
+    INT                         {$$ = strdup(string("int").data());}
     |
-    DOUBLE                      {;}
+    DOUBLE                      {$$ = strdup(string("double").data());}
     |
-    STRING                      {;}
+    STRING                      {$$ = strdup(string("string").data());}
     |
-    BOOL                        {;}
+    BOOL                        {$$ = strdup(string("bool").data());}
 expr:
     expr_OR                         {;}
 expr_OR:
@@ -195,7 +244,7 @@ literal:
 %%
 void yyerror(char const *s){
     extern int yylineno;
-    printf("%s near line  %d ",s,yylineno);  
+    fprintf(stderr, "%s near line  %d\n",s,yylineno);  
 }
 int main(int argc, char * argv[])
 {
