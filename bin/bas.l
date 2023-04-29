@@ -5,11 +5,10 @@
 %}
 digit           [0-9]
 symbols         [-+*/=&^!|(){};]
-whitespace      [ \t\n]
+whitespace      [ \t\n\r]
 alpha           [a-zA-z]  
 string          \"({digit}|{alpha})*\"
 %%
-ඞ                                                           {return COMMENT;}
 const                                                       {return CONST;}
 int                                                         {return INT;}
 double                                                      {return DOUBLE;}
@@ -23,9 +22,11 @@ bool                                                        {return BOOL;}
 \<=                                                         {return LTE;}
 &&                                                          {return AND;}
 \|\|                                                        {return OR;}
+for                                                         {return FOR;}
 while                                                       {return WHILE;}
 repeat                                                      {return REPEAT;}
 until                                                       {return UNTIL;}
+(ඞ[^\n\r]*)                                                 ;
 {symbols}                                                   {return *yytext;}
 {string}                                                    {
                                                                 yylval.stringVal = strdup(yytext);

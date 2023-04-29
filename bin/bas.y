@@ -16,8 +16,11 @@
     double doubleVal;
 }
 // Reserved Words
-%token WHILE REPEAT UNTIL EQ NE GT LT GTE LTE AND OR CONST INT DOUBLE STRING BOOL COMMENT
+%token FOR WHILE REPEAT UNTIL EQ NE GT LT GTE LTE AND OR CONST INT DOUBLE STRING BOOL COMMENT
 %token <intVal> INT_VAL <stringVal> ID <doubleVal> DOUBLE_VAL <stringVal> STRING_VAL
+%type <char*> for_loop_stmt_1
+%type <char*> for_loop_stmt_2
+%type <intVal> expr
 %type <intVal> expr_AND
 %type <intVal> expr_bitwise_OR
 %type <intVal> expr_bitwise_XOR
@@ -32,19 +35,33 @@ root:
     |
     ;
 statement:
-    comment                                 {cout<<"Comment"<<endl;}
-    |
     repeat_until_loop ';'                   {cout<<"Repeat Loop Detected"<<endl;}
+    |
+    for_loop                            {cout<<"For Loop Detected"<<endl;}
     |
     while_loop                   {cout<<"While Loop Detected"<<endl;}
     |
+    initialization ';'                  {cout<<"Initialization"<<endl;}
+    |
+    // declaration ';'                  {cout<<"Declaration"<<endl;}
+    // |
     assignment ';'                  {cout<<"Assignment"<<endl;}
     |
     ID                           {cout<<symbol_table[string($1)]<<endl;}
-comment:
-    COMMENT statement            {;}
 repeat_until_loop:
     REPEAT '{' root '}' UNTIL '(' cond ')'  {;}
+for_loop:
+    FOR '(' for_loop_stmt_1 ';' for_loop_stmt_2 ';' for_loop_stmt_2 ')' '{' root '}'        {;}
+for_loop_stmt_1:
+    initialization      {;}
+    |
+    for_loop_stmt_2     {;}              
+for_loop_stmt_2:
+    expr                {;}
+    |
+    assignment          {;}
+    | 
+                        {;}                                                        
 while_loop:
     WHILE '(' cond ')' '{' root '}'     {;}
 cond:
@@ -65,12 +82,16 @@ cond:
     cond LTE literal                  {;}
     |
     literal                             {;}
+initialization:
+    CONST type ID '=' expr       {symbol_table[string($3)] = $5;}
+    |
+    type ID '=' expr             {symbol_table[string($2)] = $4;}
+// declaration:
+//     CONST type ID             {symbol_table[string($3)] = ;} //TODO: modify symbol table to accept an uninitialized variable
+//     |
+//     type ID            {symbol_table[string($2)] = ;}
 assignment:
-    CONST type ID '=' expr_OR             {symbol_table[string($3)] = $5;}
-    |
-    type ID '=' expr_OR             {symbol_table[string($2)] = $4;}
-    |
-    ID '=' expr_OR             {symbol_table[string($1)] = $3;}
+    ID '=' expr             {symbol_table[string($1)] = $3;}
 type:
     INT                         {;}
     |
@@ -79,6 +100,8 @@ type:
     STRING                      {;}
     |
     BOOL                        {;}
+expr:
+    expr_OR                         {;}
 expr_OR:
     expr_OR OR expr_AND           {cout<<"OR ";}
     |
