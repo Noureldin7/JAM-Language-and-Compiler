@@ -1,7 +1,7 @@
 %{
     #include <stdlib.h>
     void yyerror(char const*);
-    #include "bas.tab.h"
+    #include "jam.tab.h"
 %}
 %option yylineno
 digit           [0-9]

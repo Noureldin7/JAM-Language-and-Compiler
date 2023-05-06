@@ -44,11 +44,11 @@ root:
     |
     ;
 statement:
-    repeat_until_loop ';'                   {cout<<"Repeat Loop Detected"<<endl;}
+    {cout<<"Repeat Loop Started"<<endl;} repeat_until_loop ';'                   {cout<<"Repeat Loop Ended"<<endl;}
     |
-    for_loop                            {cout<<"For Loop Detected"<<endl;}
+    {cout<<"For Loop Started"<<endl;} for_loop                            {cout<<"For Loop Ended"<<endl;}
     |
-    while_loop                   {cout<<"While Loop Detected"<<endl;}
+    {cout<<"While Loop Started"<<endl;} while_loop                   {cout<<"While Loop Ended"<<endl;}
     |
     function_declaration                {;}
     |
@@ -60,14 +60,15 @@ statement:
     |
     initialization ';'                  {cout<<"Initialization"<<endl;}
     |
-    if_statement                        {cout << "IF statement Detected" <<endl;}
+    {cout << "IF statement started" <<endl;} if_statement                        {cout << "IF statement ended" <<endl;}
     |
-    switch_statement                    {cout << "SWITCH statement Detected" <<endl;}
-    // declaration ';'                  {cout<<"Declaration"<<endl;}
+    {cout << "SWITCH statement started" <<endl;} switch_statement                {cout << "SWITCH statement ended" <<endl;}
     |
     assignment ';'                  {cout<<"Assignment"<<endl;}
     |
-    ID ';'                           {cout<<$1 << ": " << symbol_table[string($1)]<<endl;}
+    ID ';'                            {cout<<$1 << ": " << symbol_table[string($1)]<<endl;}
+    |
+    {cout << "scope start" << endl;} '{' root '}'                     {cout << "scope end"<<endl;}
 repeat_until_loop:
     REPEAT '{' root '}' UNTIL '(' cond ')'  {;}
 for_loop:
@@ -102,6 +103,11 @@ cond:
     cond LTE literal                  {;}
     |
     literal                             {;}
+;
+initialization:
+    CONST type ID '=' expr       {symbol_table[string($3)] = $5;}
+    |
+    type ID '=' expr             {symbol_table[string($2)] = $4;}
 ;
 function_call:
     ID '(' function_call_parameters_optional ')'                                {cout << "function " << $1 << " called" << endl;}
@@ -152,11 +158,6 @@ enum_declaration_body:
     enum_declaration_body ',' ID                                                          {enum_table[current_enum].push_back(string($3)); cout << $3 << ", ";}
     |
     ID                                                                                    {enum_table[current_enum].push_back(string($1)); cout << $1 << ", ";}
-;
-initialization:
-    CONST type ID '=' expr       {symbol_table[string($3)] = $5;}
-    |
-    type ID '=' expr             {symbol_table[string($2)] = $4;}
 ;
 if_statement:
         IF '(' expr ')' '{' root '}'
