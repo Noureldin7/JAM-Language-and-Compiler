@@ -10,6 +10,7 @@
     void yyerror(char const *);
     unordered_map<string,int> symbol_table;
     extern FILE* yyin;
+    int functional_depth = 0;
 %}
 %union {
     int intVal;
@@ -32,6 +33,7 @@
 %type <intVal> expr_MUL
 %type <intVal> literal
 %type <stringVal> type
+%type <stringVal> function_declaration_prototype
 %%
 root:
     root statement           {;}
@@ -47,6 +49,8 @@ statement:
     function_declaration                {;}
     |
     function_call ';'                   {;}
+    |
+    return_statement ';'                   {if(functional_depth < 1) yyerror(strdup(string("Return statement outside function scope").data()));}
     |
     initialization ';'                  {cout<<"Initialization"<<endl;}
     |
@@ -110,9 +114,12 @@ function_call_parameter:
     ID                                                                          {;}
 ;
 function_declaration:
-    VOID ID '(' function_declaration_parameters_optional ')' '{' function_body '}'       {cout << $2 <<" function returns void" << endl;}
+    function_declaration_prototype {functional_depth++;} '{' root '}'           {cout<<"End of function "<< $1 << endl; functional_depth--;}
+;
+function_declaration_prototype:
+    VOID ID {cout << $2 <<" function returns void, takes: ";} '(' function_declaration_parameters_optional ')'          {cout << "\b\b  \n"; $$=strdup($2);}
     |
-    type ID '(' function_declaration_parameters_optional ')' '{' function_body '}'       {cout << $2 <<" function returns " << $1 << endl;}
+    type ID {cout << $2 <<" function returns " << $1 << ", takes: ";} '(' function_declaration_parameters_optional ')'  {cout << "\b\b  \n"; $$=strdup($2);}
 ;
 function_declaration_parameters_optional:
     function_declaration_parameters                                             {;}
@@ -125,16 +132,12 @@ function_declaration_parameters:
     function_declaration_parameter                                              {;}
 ;
 function_declaration_parameter:
-    type ID                                                                     {cout << "function argument: " << $1 << ' ' << $2 << endl;}
-;
-function_body:
-    function_body statement                                                     {;}
-    |
-    function_body return_statement                                               {;}
-    |
+    type ID                                                                     {cout << $1 << ' ' << $2 << ", ";}
 ;
 return_statement:
-    RETURN expr ';'                                                              {;}
+    RETURN expr                                                                 {;}
+    |
+    RETURN                                                                      {;}
 ;
 initialization:
     CONST type ID '=' expr       {symbol_table[string($3)] = $5;}
@@ -244,7 +247,8 @@ literal:
 %%
 void yyerror(char const *s){
     extern int yylineno;
-    fprintf(stderr, "%s near line  %d\n",s,yylineno);  
+    fprintf(stderr, "%s near line  %d\n",s,yylineno);
+    exit(-1);
 }
 int main(int argc, char * argv[])
 {
