@@ -5,7 +5,7 @@
 %}
 %option yylineno
 digit           [0-9]
-symbols         [-+*/=&^!|(){};:,]
+symbols         [-+*/=&^!|(){};:,\.]
 whitespace      [ \t\n\r]
 alpha           [a-zA-z]  
 string          \"({digit}|\.|{alpha})*\"
@@ -35,6 +35,7 @@ break                                                       {return BREAK;}
 default                                                     {return DEFAULT;}
 void                                                        {return VOID;}
 return                                                      {return RETURN;}
+enum                                                        {return ENUM;}
 \'.\'                                                       {return SINGLE_CHAR;}
 (ඞ[^\n\r]*)                                                 ;
 {symbols}                                                   {return *yytext;}

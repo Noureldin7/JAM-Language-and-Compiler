@@ -62,7 +62,6 @@ repeat
 {
     c = c-1;
 }until(a==0);
-
 int func(int h5a, string str){
     int r = 0;
     for (int i = 0; i < 10; i = i + 1) {
@@ -74,4 +73,19 @@ int func(int h5a, string str){
     func();
     return 1;
 }
-
+x;
+enum week{
+    sunday,
+    monday,
+    tuesday,
+    wednesday,
+    thursday,
+    friday,
+    saturday
+};
+ඞ x = month.january;
+ඞ x = week.not_a_day;
+x = week.sunday;
+x = week.monday;
+x = week.tuesday;
+x;

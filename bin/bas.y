@@ -5,12 +5,16 @@
     #include <unordered_map>
     #include <string>
     #include <cstring>
+    #include <vector>
+    #include <algorithm>
     using namespace std;
     int yylex(void);
     void yyerror(char const *);
     unordered_map<string,int> symbol_table;
     extern FILE* yyin;
     int functional_depth = 0;
+    unordered_map<string,vector<string>> enum_table;
+    string current_enum;
 %}
 %union {
     int intVal;
@@ -18,7 +22,7 @@
     double doubleVal;
 }
 // Reserved Words
-%token FOR WHILE REPEAT UNTIL EQ NE GT LT GTE LTE AND OR CONST INT DOUBLE STRING BOOL VOID RETURN
+%token FOR WHILE REPEAT UNTIL EQ NE GT LT GTE LTE AND OR CONST INT DOUBLE STRING BOOL VOID RETURN ENUM
 %token IF ELSE SWITCH CASE DEFAULT BREAK
 %token <intVal> INT_VAL <stringVal> ID <doubleVal> DOUBLE_VAL <stringVal> STRING_VAL <stringVal> SINGLE_CHAR
 %type <stringVal> for_loop_stmt_1
@@ -52,6 +56,8 @@ statement:
     |
     return_statement ';'                   {if(functional_depth < 1) yyerror(strdup(string("Return statement outside function scope").data()));}
     |
+    enum_declaration ';'                   {;}
+    |
     initialization ';'                  {cout<<"Initialization"<<endl;}
     |
     if_statement                        {cout << "IF statement Detected" <<endl;}
@@ -61,7 +67,7 @@ statement:
     |
     assignment ';'                  {cout<<"Assignment"<<endl;}
     |
-    ID                           {cout<<symbol_table[string($1)]<<endl;}
+    ID ';'                           {cout<<$1 << ": " << symbol_table[string($1)]<<endl;}
 repeat_until_loop:
     REPEAT '{' root '}' UNTIL '(' cond ')'  {;}
 for_loop:
@@ -138,6 +144,14 @@ return_statement:
     RETURN expr                                                                 {;}
     |
     RETURN                                                                      {;}
+;
+enum_declaration:
+    ENUM ID {cout << "Enum " << $2 << " contains values: "; current_enum=string($2); enum_table[current_enum] = vector<string>();} '{' enum_declaration_body '}'     {cout<<"\b\b  \n";}
+;
+enum_declaration_body:
+    enum_declaration_body ',' ID                                                          {enum_table[current_enum].push_back(string($3)); cout << $3 << ", ";}
+    |
+    ID                                                                                    {enum_table[current_enum].push_back(string($1)); cout << $1 << ", ";}
 ;
 initialization:
     CONST type ID '=' expr       {symbol_table[string($3)] = $5;}
@@ -242,6 +256,14 @@ literal:
     SINGLE_CHAR                      {;}
     |
     STRING_VAL                      {;}
+    |
+    ID '.' ID                       {
+                                    auto v = enum_table.find(string($1));
+                                    if(v == enum_table.end()) yyerror("Enum not found");
+                                    auto e = find(v->second.begin(), v->second.end(), string($3));
+                                    if(e == v->second.end()) yyerror("Enum value not found");
+                                    $$ = distance(v->second.begin(), e);
+                                    }
     |
     ID                           {$$ = symbol_table[string($1)];}
 %%
