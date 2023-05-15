@@ -1,16 +1,13 @@
 %{ 
+    #include "../source/utils/symbol_table.hpp"
     #include <stdlib.h>
     #include <stdio.h>
-    #include <iostream>
-    #include <unordered_map>
-    #include <string>
     #include <cstring>
-    #include <vector>
     #include <algorithm>
     using namespace std;
     int yylex(void);
     void yyerror(char const *);
-    unordered_map<string,int> symbol_table;
+    symbol_table table;
     extern FILE* yyin;
     int functional_depth = 0;
     unordered_map<string,vector<string>> enum_table;
@@ -24,7 +21,7 @@
 // Reserved Words
 %token FOR WHILE REPEAT UNTIL EQ NE GT LT GTE LTE AND OR CONST INT DOUBLE STRING BOOL VOID RETURN ENUM
 %token IF ELSE SWITCH CASE DEFAULT BREAK
-%token <intVal> INT_VAL <stringVal> ID <doubleVal> DOUBLE_VAL <stringVal> STRING_VAL <stringVal> SINGLE_CHAR
+%token <intVal> INT_VAL <stringVal> ID <doubleVal> DOUBLE_VAL <stringVal> STRING_VAL
 %type <stringVal> for_loop_stmt_1
 %type <stringVal> for_loop_stmt_2
 %type <intVal> expr
@@ -58,7 +55,7 @@ statement:
     |
     enum_declaration ';'                   {;}
     |
-    initialization ';'                  {cout<<"Initialization"<<endl;}
+    initialization ';'                  {table.print();}
     |
     {cout << "IF statement started" <<endl;} if_statement                        {cout << "IF statement ended" <<endl;}
     |
@@ -66,7 +63,7 @@ statement:
     |
     assignment ';'                  {cout<<"Assignment"<<endl;}
     |
-    ID ';'                            {cout<<$1 << ": " << symbol_table[string($1)]<<endl;}
+    ID ';'                            {cout<<$1 << ": " << table.lookup_symbol(string($1))->type <<endl;}
     |
     {cout << "scope start" << endl;} '{' root '}'                     {cout << "scope end"<<endl;}
 repeat_until_loop:
@@ -105,9 +102,9 @@ cond:
     literal                             {;}
 ;
 initialization:
-    CONST type ID '=' expr       {symbol_table[string($3)] = $5;}
+    CONST type ID '=' expr       {table.insert_symbol(string($3),$2,true);}
     |
-    type ID '=' expr             {symbol_table[string($2)] = $4;}
+    type ID '=' expr             {table.insert_symbol(string($2),$1);}
 ;
 function_call:
     ID '(' function_call_parameters_optional ')'                                {cout << "function " << $1 << " called" << endl;}
@@ -183,7 +180,7 @@ default_stmt: DEFAULT ':' root BREAK ';'
 //     |
 //     type ID            {symbol_table[string($2)] = ;}
 assignment:
-    ID '=' expr             {symbol_table[string($1)] = $3;}
+    ID '=' expr             {;}
 type:
     INT                         {$$ = strdup(string("int").data());}
     |
@@ -254,8 +251,6 @@ literal:
     |
     DOUBLE_VAL                      {;}
     |
-    SINGLE_CHAR                      {;}
-    |
     STRING_VAL                      {;}
     |
     ID '.' ID                       {
@@ -266,7 +261,7 @@ literal:
                                     $$ = distance(v->second.begin(), e);
                                     }
     |
-    ID                           {$$ = symbol_table[string($1)];}
+    ID                           {;}
 %%
 void yyerror(char const *s){
     extern int yylineno;

@@ -1,4 +1,5 @@
 %{
+    #include "../source/utils/symbol_table.hpp"
     #include <stdlib.h>
     void yyerror(char const*);
     #include "jam.tab.h"
