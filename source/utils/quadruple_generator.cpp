@@ -2,7 +2,7 @@
 
 quadruple_generator::quadruple_generator(string filename)
 {
-    writer = fstream(filename);
+    writer = ofstream(filename);
 }
 void quadruple_generator::write_quadruple(ops operation, symbol *op1, symbol *op2, symbol *dst)
 {

@@ -5,7 +5,7 @@
 
 
 class quadruple_generator {
-    fstream writer;
+    ofstream writer;
     void write_quadruple(ops operation, symbol *op1, symbol *op2, symbol *dst);
     void write_quadruple(ops operation, string op1_str, string op2_str, string dst_str);
 public:
