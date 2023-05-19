@@ -1,14 +1,16 @@
 %{
+    #include "../source/utils/symbol_table.hpp"
     #include <stdlib.h>
-    void yyerror(char const*);
-    #include "bas.tab.h"
+    // void yyerror(char const*);
+    #include "../source/utils/utils.hpp"
+    #include "jam.tab.h"
 %}
 %option yylineno
 digit           [0-9]
-symbols         [-+*/=&^!|(){};]
+symbols         [-+*/=&^!|(){};:,\.]
 whitespace      [ \t\n\r]
 alpha           [a-zA-z]  
-string          \"({digit}|{alpha})*\"
+string          \"({digit}|\.|{alpha})*\"
 %%
 const                                                       {return CONST;}
 int                                                         {return INT;}
@@ -33,7 +35,9 @@ switch                                                      {return SWITCH;}
 case                                                        {return CASE;}
 break                                                       {return BREAK;}
 default                                                     {return DEFAULT;}
-\'.\'                                                       {return SINGLE_CHAR;}
+void                                                        {return VOID;}
+return                                                      {return RETURN;}
+enum                                                        {return ENUM;}
 (ඞ[^\n\r]*)                                                 ;
 {symbols}                                                   {return *yytext;}
 {string}                                                    {
@@ -45,11 +49,11 @@ default                                                     {return DEFAULT;}
                                                                 return ID;
                                                             }
 {digit}+\.{digit}+                                          {
-                                                                yylval.doubleVal = atof(yytext);
+                                                                yylval.stringVal = strdup(yytext);
                                                                 return DOUBLE_VAL;
                                                             }
 {digit}+                                                    {
-                                                                yylval.intVal = atoi(yytext);
+                                                                yylval.stringVal = strdup(yytext);
                                                                 return INT_VAL;
                                                             }
 {whitespace}                                                ;

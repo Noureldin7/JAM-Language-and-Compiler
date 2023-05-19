@@ -1,7 +1,7 @@
 all: clean build run
 build:
-	cd bin ; bison -d bas.y ; flex bas.l ; g++ lex.yy.c bas.tab.c -o bas.out
+	cd source ; bison -d jam.y -o "../bin/jam.tab.c" ; flex -o "../bin/lex.yy.c" jam.l ; cd ../bin ; g++ lex.yy.c jam.tab.c ../source/utils/symbol_table.cpp ../source/utils/utils.cpp -o jam.out
 clean:
 	rm -f bin/*.out bin/*.tab.* bin/*.yy.c
 run:
-	./bin/bas.out "program.jam"
+	./bin/jam.out "table_test.jam"

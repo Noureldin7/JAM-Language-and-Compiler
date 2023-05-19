@@ -51,8 +51,10 @@ switch(c)
 {
     case 2.1:
     a=1;
+    break;
     case 1.2:
     a=0;
+    break;
 }
 
 
@@ -68,9 +70,9 @@ enum week {
     Tuesday
 }; ඞ ; is Optional
 
-week y = Sunday; ඞ Optional
+ඞ week y = Sunday; ඞ Optional
 int x = week.Sunday;
-func(int a, string g)
+void func(int a, string g)
 {
     a = 2;
     g = "foo";
