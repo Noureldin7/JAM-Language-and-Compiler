@@ -49,7 +49,8 @@ public:
     // Print the local scope
     void print();
     // function that generates label names 
-    string generate_label();
+    string generate_jal_label();
+    string generate_laj_table();
     // function that generates temporary names
     string generate_temp();
 };
