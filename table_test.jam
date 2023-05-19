@@ -2,7 +2,8 @@
 ඞ yywarn --> Always false / unused variables
 ඞ true & false
 ඞ Finish Function
-int a = 1*2;
+ඞ Symbol table should print to file
+int a = !1*2;
 const int b = 1;
 double c = 1.1+2.3;
 if(a==b)
