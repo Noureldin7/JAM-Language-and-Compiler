@@ -1,5 +1,8 @@
 #include "quadruple_generator.hpp"
 
+quadruple_generator::quadruple_generator()
+{
+}
 
 symbol* quadruple_generator::not_op(symbol* op){
     // print eni b3ks el operation eli 3ndy
@@ -23,6 +26,35 @@ symbol* quadruple_generator::plus_op(symbol* op1 , symbol* op2){
 
 symbol* quadruple_generator::concat_op(symbol* op1 , symbol* op2){
     
+}
+
+symbol* quadruple_generator::Int(symbol* op){
+    // check that op is not string
+    // if it is not string call arth_op
+    // else throw error
+}
+
+symbol* quadruple_generator::Double(symbol* op){
+    // check that op is not string
+    // if it is not string call arth_op
+    // else throw error
+}
+
+symbol* quadruple_generator::String(symbol* op){
+    // check that op is string
+    // if it is string call concat_op
+    // else throw error
+}
+
+symbol* quadruple_generator::Bool(symbol* op){
+    // check that op is not string
+    // if it is not string call not_op
+    // else throw error
+}
+
+
+quadruple_generator::~quadruple_generator()
+{
 }
 
 // list of needed quadruples generating functions
