@@ -50,7 +50,7 @@ public:
     void print();
     // function that generates label names 
     string generate_jal_label();
-    string generate_laj_table();
+    string generate_laj_label();
     // function that generates temporary names
     string generate_temp();
 };
