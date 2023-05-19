@@ -252,18 +252,18 @@ expr_lit:
     |
     '(' expr_OR ')'               {;}
 literal:
-    INT_VAL                      {$$ = new symbol($1,table.get_depth(),types::Int,true);}
+    INT_VAL                      {$$ = new symbol($1,table.get_depth(),types::Int,true,true);}
     |
-    DOUBLE_VAL                      {$$ = new symbol($1,table.get_depth(),types::Double,true);}
+    DOUBLE_VAL                      {$$ = new symbol($1,table.get_depth(),types::Double,true,true);}
     |
-    STRING_VAL                      {$$ = new symbol($1,table.get_depth(),types::String,true);}
+    STRING_VAL                      {$$ = new symbol($1,table.get_depth(),types::String,true,true);}
     |
     ID '.' ID                       {
                                     auto v = enum_table.find(string($1));
                                     if(v == enum_table.end()) yyerror("Enum not found");
                                     auto e = find(v->second.begin(), v->second.end(), string($3));
                                     if(e == v->second.end()) yyerror("Enum value not found");
-                                    $$ = new symbol(to_string(distance(v->second.begin(), e)),0,types::String,true);
+                                    $$ = new symbol(to_string(distance(v->second.begin(), e)),table.get_depth(),types::Int,true);
                                     }
     |
     ID                           {$$ = new symbol(table.lookup_symbol(string($1)));}

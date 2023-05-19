@@ -8,6 +8,7 @@ symbol::symbol()
     this->type = types::Int;
     this->scope_depth = -1;
     this->is_const = false;
+    this->is_literal = false;
 }
 symbol::symbol(symbol* symb)
 {
@@ -15,13 +16,15 @@ symbol::symbol(symbol* symb)
     this->type = symb->type;
     this->scope_depth = symb->scope_depth;
     this->is_const = symb->is_const;
+    this->is_literal = symb->is_literal;
 }
-symbol::symbol(string name, int scope_depth, types type, bool is_const)
+symbol::symbol(string name, int scope_depth, types type, bool is_const, bool is_literal)
 {
     this->name = name;
     this->type = type;
     this->scope_depth = scope_depth;
     this->is_const = is_const;
+    this->is_literal = is_literal;
 }
 string symbol::get_name()
 {
@@ -79,7 +82,7 @@ bool symbol_table::insert_symbol(string name, types type, bool is_const)
         yyerror(error.c_str());
         return false;
     }
-    (*local_scope)[name] = symbol(name,scopes.size()-1,type,is_const);
+    (*local_scope)[name] = symbol(name,this->get_depth(),type,is_const,false);
     return true;
 }
 symbol* symbol_table::lookup_symbol(string name)

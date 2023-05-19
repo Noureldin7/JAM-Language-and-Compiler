@@ -16,7 +16,7 @@ public:
     vector<types> params;
     symbol();
     symbol(symbol*);
-    symbol(string name, int scope_depth, types type, bool is_const);
+    symbol(string name, int scope_depth, types type, bool is_const, bool is_literal);
     string get_name();
     void print();
 };
