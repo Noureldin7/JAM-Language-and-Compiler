@@ -35,32 +35,35 @@ void quadruple_generator::Numeric(symbol *op1, symbol *op2)
     }
     else
     {
-        // Coerce into stronger type (min value)
-        if (op1->type < op2->type)
+        symbol* strong_type;
+        symbol* weak_type;
+        if(op1->type < op2->type)
         {
+            strong_type = op1;
+            weak_type = op2;
             op2->type = op1->type;
-            if(op2->type==types::Int)
-            {
-                write_quadruple(ops::To_Int,op2,NULL,NULL);
-            }
-            else
-            {
-                write_quadruple(ops::To_Double,op2,NULL,NULL);
-            }
         }
         else
         {
+            strong_type = op2;
+            weak_type = op1;
             op1->type = op2->type;
-            if(op1->type==types::Int)
+        }
+        if(strong_type->type==types::Int)
+        {
+            write_quadruple(ops::Bool_To_Int,weak_type->get_name(),NULL,generate_temp());
+        }
+        else
+        {
+            if(weak_type->type==types::Bool)
             {
-                write_quadruple(ops::To_Int,op1,NULL,NULL);
+                write_quadruple(ops::Bool_To_Double,weak_type->get_name(),NULL,generate_temp());
             }
             else
             {
-                write_quadruple(ops::To_Double,op1,NULL,NULL);
+                write_quadruple(ops::Bool_To_Int,weak_type->get_name(),NULL,generate_temp());
             }
         }
-        // Print Coerce quad
     }
 }
 
@@ -223,6 +226,19 @@ symbol *quadruple_generator::pop(symbol *op)
 
 symbol *quadruple_generator::Int(symbol *op)
 {
+    if(op->type==types::String)
+    {
+        yyerror("Cannot cast type string to int");
+    }
+    op->type = types::Int;
+    if(op->type==types::Bool)
+    {
+        write_quadruple(ops::Bool_To_Int,op->get_name(),"",generate_temp());
+    }
+    else if(op->type==types::Double)
+    {
+        write_quadruple(ops::Double_To_Int,op->get_name(),"",generate_temp());
+    }
 }
 
 symbol *quadruple_generator::Double(symbol *op)
