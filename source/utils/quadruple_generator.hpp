@@ -32,6 +32,8 @@ public:
     void jmp_unconditional(string label);
     void push(symbol *op);
     symbol* pop(symbol *op);
+    void call(symbol *op);
+    void ret();
     string write_label(bool is_laj, string label = "");
     ~quadruple_generator();
 };

@@ -294,6 +294,16 @@ symbol *quadruple_generator::pop(symbol *op)
     return op;
 }
 
+void quadruple_generator::call(symbol *op)
+{
+    write_quadruple(ops::Call,op->label,"","");
+    delete op;
+}
+void quadruple_generator::ret()
+{
+    write_quadruple(ops::Ret,"","","");
+}
+
 string quadruple_generator::write_label(bool is_laj, string label)
 {
     if (is_laj)

@@ -3,6 +3,8 @@
 #define enums_H__
 enum ops
 {
+    Call,
+    Ret,
     Assign,
     Eq,
     Neq,
@@ -53,6 +55,8 @@ const std::string typeNames[] = {
     "function"
 };
 const std::string opNames[] = {
+    "CALL",
+    "RET",
     "ASS",
     "EQ",
     "NEQ",
