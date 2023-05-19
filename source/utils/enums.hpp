@@ -27,9 +27,10 @@ enum types
     Int,
     Double,
     String,
-    Bool
+    Bool,
+    Function
 };
-const std::string typeNames[] = {"int", "double", "string", "bool"};
+const std::string typeNames[] = {"int", "double", "string", "bool","function"};
 const std::string opNames[] = {"EQ", "NEQ", "LT", "GTE", "LTE", "GT","JMP_TRUE","JMP_FALSE","JMP","ADD", "SUB", "MUL", "DIV", "AND", "OR", "NOT", "ANDB", "ORB"};
 //(int) op + 1- 2 * (op % 2) 
 // if(x > 5 || y ==0) -->

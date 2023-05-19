@@ -38,3 +38,4 @@ symbol *concat_op(symbol *op1, symbol *op2)
 // 12- concat_op(+) --> ATAREK
 
 // for each op , validate the type match --> return error if not matched
+
