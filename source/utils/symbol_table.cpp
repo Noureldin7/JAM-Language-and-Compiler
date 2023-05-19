@@ -74,46 +74,40 @@ int symbol_table::get_depth()
 {
     return scopes.size()-1;
 }
-bool symbol_table::insert_symbol(string name, types type, bool is_const)
+symbol symbol_table::insert_symbol(string name, types type, bool is_const)
 {
     if((*local_scope).find(name)!=(*local_scope).end())
     {
         string error = "Redeclaration of Variable \""+name+"\"";
         yyerror(error.c_str());
-        return false;
+        return NULL;
     }
     (*local_scope)[name] = symbol(name,this->get_depth(),type,is_const,false);
-    return true;
+    return (*local_scope)[name];
 }
-symbol* symbol_table::lookup_symbol(string name)
+symbol symbol_table::lookup_symbol(string name)
 {
     for (auto itr = scopes.rbegin(); itr < scopes.rend(); itr++)
     {
         if((*itr).find(name)!=(*itr).end())
         {
-            return &(*itr)[name];
+            return (*itr)[name];
         }
     }
     string error = "Undeclared Variable \""+name+"\"";
     yyerror(error.c_str());
     return NULL;
 }
-bool symbol_table::update_symbol(string name, symbol* rhs)
+symbol symbol_table::update_symbol(string name, symbol* rhs)
 {
-    auto retrieved_symbol = lookup_symbol(name);
-    if(retrieved_symbol->is_const)
+    symbol retrieved_symbol = lookup_symbol(name);
+    if(retrieved_symbol.is_const)
     {
         string error = "Variable \""+name+"\" is Constant";
         yyerror(error.c_str());
         return false;
     }
-    if(retrieved_symbol->type==rhs->type)
-    {
-        return true;
-    }
-    string error = "Type Mismatch cannot cast type "+typeNames[rhs->type]+" into "+typeNames[retrieved_symbol->type];
-    yyerror(error.c_str());
-    return false;
+    return retrieved_symbol;
 }
 // bool symbol_table::update_symbol(string name, types rhs_type)
 // {

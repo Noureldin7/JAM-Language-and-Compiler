@@ -37,13 +37,13 @@ public:
     int get_depth();
     // Insert given symbol into the local scope
     // Returns true on success and false on failure
-    bool insert_symbol(string name, types type, bool is_const=false);
+    symbol insert_symbol(string name, types type, bool is_const);
     // Retrieve the given symbol from the closest scope
     // Returns Symbol pointer if found and NULL if not found
-    symbol* lookup_symbol(string name);
+    symbol lookup_symbol(string name);
     // Assign symbol to symbol
     // Returns true on success and false on failure
-    bool update_symbol(string name, symbol* rhs);
+    symbol update_symbol(string name, symbol* rhs);
     // bool remove_symbol(string name);
 
     // Print the local scope
