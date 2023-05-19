@@ -5,51 +5,11 @@
 
 symbol *not_op(symbol *op)
 {
-    if (op->type != types::bool)
-    {
-        // error
-        yyerror("not operator can only be applied to boolean values");
-    }
-    else
-    {
-        symbol *temp = new symbol(op);
-        delete op;
-        temp->type = !temp->type;
-        return temp;
-    }
 }
 // add , minus , mul , divide
 symbol *arth_op(ops operation, symbol *op1, symbol *op2)
 {
-    // check on matching types first
-    if (op1->type != op2->type)
-    {
-        // error
-        yyerror(" addition type mismatch");
-    }
-    else if (op1->type == types::Bool && op1->type == types::Bool){
-        //error 
-        yyerror(" arithmetic operations can not be applied to boolean values")
-    }
-    switch (operation)
-    {
-    case Add:
-        if (op1->type == types::String && op1->type == types::String)
-        {
-            // call concat_op
-            return concat_op(op1, op2);
-        }
-        else
-        {
-            // call plus_op
-            return plus_op(op1, op2);
-        }
-        break;
-    case Sub:
-
-    case Mul:
-    case Div:
-    }
+    
 }
 
 symbol *plus_op(symbol *op1, symbol *op2)
