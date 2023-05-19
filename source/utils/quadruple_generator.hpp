@@ -18,9 +18,12 @@ public:
     void String(symbol* op);
     void Bool(symbol* op);
     void Numeric(symbol* op1,symbol* op2);
+    void BitAccessable(symbol* op1, symbol* op2);
 
     void assign_op(symbol* dst, symbol* src);
     symbol* not_op(symbol* op);
+    symbol* binary_logical_op(ops operation , symbol* op1 , symbol* op2);
+    symbol* binary_bitwise_op(ops operation , symbol* op1 , symbol* op2);
     symbol* arth_op(ops operation , symbol* op1 , symbol* op2);
     symbol* plus_op(symbol* op1 , symbol* op2);
     symbol* concat_op(symbol* op1 , symbol* op2);
