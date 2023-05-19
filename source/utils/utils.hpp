@@ -4,6 +4,7 @@ using namespace std;
 #ifndef utils_H__
 #define utils_H__
 void yyerror(char const *s);
+void yywarn(char const *s);
 static int jal_label_count;
 static int laj_label_count;
 static int temp_count;

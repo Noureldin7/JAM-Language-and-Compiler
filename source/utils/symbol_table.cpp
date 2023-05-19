@@ -17,14 +17,16 @@ symbol::symbol(symbol* symb)
     this->scope_depth = symb->scope_depth;
     this->is_const = symb->is_const;
     this->is_literal = symb->is_literal;
+    this->is_used = symb->is_used;
 }
-symbol::symbol(string name, int scope_depth, types type, bool is_const, bool is_literal)
+symbol::symbol(string name, int scope_depth, types type, bool is_const, bool is_literal, bool is_used)
 {
     this->name = name;
     this->type = type;
     this->scope_depth = scope_depth;
     this->is_const = is_const;
     this->is_literal = is_literal;
+    this->is_used = is_used;
 }
 string symbol::get_name()
 {
@@ -60,15 +62,22 @@ void symbol_table::create_scope()
 }
 void symbol_table::pop_scope()
 {
-    if(scopes.size()==1)
+    // if(scopes.size()==1)
+    // {
+    //     return;
+    // }
+    // else
+    // {
+    // }
+    for(auto itr = local_scope->begin();itr!=local_scope->end();itr++)
     {
-        return;
+        if((*itr).second.is_used==false)
+        {
+            yywarn(("Unused Variable \""+(*itr).second.name+"\"").c_str());
+        }
     }
-    else
-    {
-        scopes.pop_back();
-        local_scope = &scopes.back();
-    }
+    scopes.pop_back();
+    local_scope = &scopes.back();
 }
 int symbol_table::get_depth()
 {
@@ -82,7 +91,7 @@ symbol symbol_table::insert_symbol(string name, types type, bool is_const, vecto
         yyerror(error.c_str());
         return NULL;
     }
-    (*local_scope)[name] = symbol(name,this->get_depth(),type,is_const,false);
+    (*local_scope)[name] = symbol(name,this->get_depth(),type,is_const,false,false);
     (*local_scope)[name].params = params;
     (*local_scope)[name].label = label;
     return (*local_scope)[name];
@@ -93,6 +102,7 @@ symbol symbol_table::lookup_symbol(string name)
     {
         if((*itr).find(name)!=(*itr).end())
         {
+            (*itr)[name].is_used = true;
             return (*itr)[name];
         }
     }
@@ -146,5 +156,8 @@ void symbol_table::print()
     }
     cout<<"#########################"<<endl;
     
+}
+symbol_table::~symbol_table(){
+    this->pop_scope();
 }
 

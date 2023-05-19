@@ -12,12 +12,13 @@ public:
     types type;
     bool is_const;
     bool is_literal;
+    bool is_used;
     // Index of the symbol's scope in the scope vector
     int scope_depth;
     vector<types> params; // return type at index zero ... sorry
     symbol();
     symbol(symbol*);
-    symbol(string name, int scope_depth, types type, bool is_const, bool is_literal);
+    symbol(string name, int scope_depth, types type, bool is_const, bool is_literal, bool is_used=false);
     string get_name();
     void print();
 };
@@ -49,5 +50,5 @@ public:
 
     // Print the local scope
     void print();
-    // function that generates label names 
+    ~symbol_table();
 };
