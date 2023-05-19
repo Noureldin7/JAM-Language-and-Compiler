@@ -25,10 +25,16 @@ enum ops
     Concat,
     Push,
     Pop,
-    To_Bool,
-    To_String,
-    To_Int,
-    To_Double
+    Int_To_Bool,
+    Double_To_Bool,
+    String_To_Bool,
+    Bool_To_Int,
+    Double_To_Int,
+    Bool_To_Double,
+    Int_To_Double,
+    Bool_To_String,
+    Int_To_String,
+    Double_To_String,
 };
 enum types
 {
@@ -68,10 +74,16 @@ const std::string opNames[] = {
     "CONCAT",
     "PUSH",
     "POP",
-    "TO_BOOL",
-    "TO_STRING",
-    "TO_INT",
-    "TO_DOUBLE"
+    "INT_TO_BOOL",
+    "DOUBLE_TO_BOOL",
+    "STRING_TO_BOOL",
+    "BOOL_TO_INT",
+    "DOUBLE_TO_INT",
+    "BOOL_TO_DOUBLE",
+    "INT_To_DOUBLE",
+    "BOOL_To_STRING",
+    "INT_TO_STRING",
+    "DOUBLE_TO_STRING",
 };
 //(int) op + 1- 2 * (op % 2) 
 // if(x > 5 || y ==0) -->
