@@ -12,6 +12,7 @@
     int functional_depth = 0;
     unordered_map<string,vector<string>> enum_table;
     string current_enum;
+    symbol current_switch = symbol();
     quadruple_generator quad_gen("quad.txt");
 %}
 %union {
@@ -25,6 +26,7 @@
 %token <stringVal> INT_VAL <stringVal> ID <stringVal> DOUBLE_VAL <stringVal> STRING_VAL
 %type <symbVal> for_loop_stmt_2, expr, expr_OR, expr_AND, expr_bitwise_OR, expr_bitwise_XOR, expr_bitwise_AND, expr_EQ, expr_REL, expr_ADD, expr_MUL, expr_NOT, expr_lit, literal
 %type <typeVal> type
+%type <stringVal> unmatched_if_statement
 %%
 root:
     root statement           {;}
@@ -97,7 +99,7 @@ function_call_parameter:
     ID                                                                          {;}
 ;
 function_declaration:
-    function_declaration_prototype {functional_depth++;} '{' root '}'           {cout<<"End of function "<< $1 << endl; functional_depth--;}
+    function_declaration_prototype {functional_depth++;} '{' root '}'           {functional_depth--;}
 ;
 function_declaration_prototype:
     VOID ID {cout << $2 <<" function returns void, takes: ";} '(' function_declaration_parameters_optional ')'
@@ -131,12 +133,15 @@ enum_declaration_body:
     ID                                                                                    {enum_table[current_enum].push_back(string($1));}
 ;
 if_statement:
-        IF '(' expr ')' {string l = generate_laj_label(); quad_gen.jmp_on_condition($3, false, l); $<stringVal>$ = strdup(l.data()); table.create_scope();} '{' root '}' {table.pop_scope(); quad_gen.write_label(true, string($<stringVal>5));}
+        unmatched_if_statement {quad_gen.write_label(true, string($1));}
         |
-        IF '(' expr ')' {string l = generate_laj_label(); quad_gen.jmp_on_condition($3, false, l); $<stringVal>$ = strdup(l.data()); table.create_scope();} '{' root '}' {string l = generate_laj_label(); quad_gen.jmp_unconditional(l); $<stringVal>$ = strdup(l.data()); table.pop_scope(); quad_gen.write_label(true, string($<stringVal>5)); table.create_scope();} ELSE '{' root '}' {table.pop_scope(); quad_gen.write_label(true, string($<stringVal>11));}
+        unmatched_if_statement {string l = generate_laj_label(); quad_gen.jmp_unconditional(l); $<stringVal>$ = strdup(l.data()); table.pop_scope(); quad_gen.write_label(true, string($1)); table.create_scope();} ELSE '{' root '}' {table.pop_scope(); quad_gen.write_label(true, string($<stringVal>2));}
+;
+unmatched_if_statement:
+        IF '(' expr ')' {string l = generate_laj_label(); quad_gen.jmp_on_condition($3, false, l); $<stringVal>$ = strdup(l.data()); table.create_scope();} '{' root '}' {table.pop_scope(); $$ = $<stringVal>5;}
 ;
 switch_statement:
-    SWITCH '(' ID ')' '{' switch_body '}'
+    SWITCH {if (current_switch.name != "") yyerror("Nested switch cases aren't allowed");} '(' ID ')' {current_switch = table.lookup_symbol(string($4));} '{' switch_body '}' {current_switch = symbol();}
 ;
 switch_body:  case_stmts
     | case_stmts default_stmt
@@ -144,9 +149,9 @@ switch_body:  case_stmts
 case_stmts: case_stmts case_stmt
         | case_stmt
 ;
-case_stmt: CASE literal ':' root BREAK ';'
+case_stmt: CASE literal {symbol* s = quad_gen.relational_op(ops::Neq, new symbol(&current_switch), $2); string l = generate_laj_label(); $<stringVal>$ = strdup(l.data()); quad_gen.jmp_on_condition(s, true, l); table.create_scope();} ':' root BREAK ';' {quad_gen.write_label(true, string($<stringVal>3)); table.pop_scope();}
 ;
-default_stmt: DEFAULT ':' root BREAK ';'
+default_stmt: DEFAULT {table.create_scope();} ':' root BREAK ';' {table.pop_scope();}
 ;
 /* const_expr: INT_VAL | DOUBLE_VAL | SINGLE_CHAR | STRING_VAL
 ; */
