@@ -78,9 +78,9 @@ while_loop:
     WHILE {$<stringVal>$ = strdup(write_label(false).data());} '(' expr ')' {string l = generate_laj_label(); quad_gen.jmp_on_condition($<stringVal>4, false, l); $<stringVal>$ = strdup(l.data()); table.create_scope();} '{' root '}' {quad_gen.jmp_unconditional(string($<stringVal>2)); table.pop_scope(); quad_gen.write_label(true, string($<stringVal>6));}
 ;
 initialization:
-    CONST type ID '=' expr       {symbol s = table.insert_symbol(string($3),$2,true); quad_gen.assignment(s,$5);}
+    CONST type ID '=' expr       {symbol s = table.insert_symbol(string($3),$2,true); quad_gen.assign_op(s,$5);}
     |
-    type ID '=' expr             {symbol s = table.insert_symbol(string($2),$1); quad_gen.assignment(s,$4);}
+    type ID '=' expr             {symbol s = table.insert_symbol(string($2),$1); quad_gen.assign_op(s,$4);}
 ;
 function_call:
     ID '(' function_call_parameters_optional ')'                                {;}
@@ -165,7 +165,7 @@ type:
     |
     BOOL                        {$$ = types::Bool;}
 assignment:
-    ID '=' expr             {lookup(ID); assign();}
+    ID '=' expr             {symbol s = table.update_symbol(string($1)); quad_gen.assign_op(s,$3);}
 expr:
     expr_OR                         {$$ = $1;}
 expr_OR:
@@ -189,7 +189,7 @@ expr_bitwise_AND:
     |
     expr_EQ                         {$$ = $1;}
 expr_EQ:
-    expr_EQ EQ expr_REL           {$$ = relational_op(ops::Eq,$1,$3);}
+    expr_EQ EQ expr_REL           {$$ = quad_gen.relational_op(ops::Eq,$1,$3);}
     |
     expr_EQ NE expr_REL           {$$ = quad_gen.relational_op(ops::Neq, $1, $3);}
     |
@@ -206,7 +206,7 @@ expr_REL:
     expr_ADD                         {$$ = $1;}
 
 expr_ADD:
-    expr_ADD '+' expr_MUL           {$$ = quad_gen.plus($1,$3);}
+    expr_ADD '+' expr_MUL           {$$ = quad_gen.plus_op($1,$3);}
     |
     expr_ADD '-' expr_MUL           {$$ = quad_gen.arth_op(ops::Sub, $1, $3);}
     |

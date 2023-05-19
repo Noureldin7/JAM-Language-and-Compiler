@@ -98,7 +98,7 @@ symbol symbol_table::lookup_symbol(string name)
     yyerror(error.c_str());
     return NULL;
 }
-symbol symbol_table::update_symbol(string name, symbol* rhs)
+symbol symbol_table::update_symbol(string name)
 {
     symbol retrieved_symbol = lookup_symbol(name);
     if(retrieved_symbol.is_const)

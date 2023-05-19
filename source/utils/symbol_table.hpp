@@ -44,7 +44,7 @@ public:
     symbol lookup_symbol(string name);
     // Assign symbol to symbol
     // Returns true on success and false on failure
-    symbol update_symbol(string name, symbol* rhs);
+    symbol update_symbol(string name);
     // bool remove_symbol(string name);
 
     // Print the local scope
