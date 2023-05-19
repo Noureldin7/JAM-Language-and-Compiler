@@ -227,8 +227,10 @@ void quadruple_generator::push(symbol *op)
     if (op->type == types::Function)
         yyerror("Error: Function can't be pushed");
     write_quadruple(ops::Push, op->get_name(), "", "");
+    delete op;
 }
 
+// DOESN'T DELETE SYMBOL 5LY BALAK
 symbol *quadruple_generator::pop(symbol *op)
 {
     if (op->type == types::Function)
