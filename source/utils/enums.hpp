@@ -22,6 +22,8 @@ enum ops
     Bit_And,
     Bit_Or,
     Concat,
+    Push,
+    Pop,
 };
 enum types
 {
@@ -32,7 +34,7 @@ enum types
     Function
 };
 const std::string typeNames[] = {"double", "int", "bool", "string", "function"};
-const std::string opNames[] = {"EQ", "NEQ", "LT", "GTE", "LTE", "GT","JMP_TRUE","JMP_FALSE","JMP","ADD", "SUB", "MUL", "DIV", "AND", "OR", "NOT", "ANDB", "ORB","CONCAT"};
+const std::string opNames[] = {"EQ", "NEQ", "LT", "GTE", "LTE", "GT","JMP_TRUE","JMP_FALSE","JMP","ADD", "SUB", "MUL", "DIV", "AND", "OR", "NOT", "ANDB", "ORB","CONCAT", "PUSH", "POP"};
 //(int) op + 1- 2 * (op % 2) 
 // if(x > 5 || y ==0) -->
 // gt x , 5, t1
