@@ -294,16 +294,16 @@ symbol *quadruple_generator::pop(symbol *op)
     return op;
 }
 
-string quadruple_generator::write_label(bool is_laj, string label = "")
+string quadruple_generator::write_label(bool is_laj, string label)
 {
     if (is_laj)
     {
         writer << label << ":" << endl;
         return label;
     }
-    string label = generate_jal_label();
-    writer << label << ":" << endl;
-    return label;
+    string label_jal = generate_jal_label();
+    writer << label_jal << ":" << endl;
+    return label_jal;
 }
 
 void quadruple_generator::Int(symbol *op)
