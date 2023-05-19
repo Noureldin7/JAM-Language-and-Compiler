@@ -48,4 +48,8 @@ public:
 
     // Print the local scope
     void print();
+    // function that generates label names 
+    string generate_label();
+    // function that generates temporary names
+    string generate_temp();
 };
