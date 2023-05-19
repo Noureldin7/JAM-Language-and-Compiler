@@ -73,6 +73,43 @@ void quadruple_generator::Numeric(symbol *op1, symbol *op2)
     }
 }
 
+void quadruple_generator::BitAccessible(symbol* op1, symbol* op2) {
+    if (op1->type == types::String || op1->type == types::Function || op1->type == types::Double)
+    {
+        yyerror(("Invalid type " + typeNames[op1->type]).c_str());
+    }
+    if (op2->type == types::String || op2->type == types::Function || op2->type == types::Double)
+    {
+        yyerror(("Invalid type " + typeNames[op2->type]).c_str());
+    }
+
+    if (op1->type == op2->type)
+    {
+        return;
+    }
+
+    symbol *strong_type;
+    symbol *weak_type;
+    if (op1->type < op2->type)
+    {
+        strong_type = op1;
+        weak_type = op2;
+    }
+    else
+    {
+        strong_type = op2;
+        weak_type = op1;
+    }
+    weak_type->type = strong_type->type;
+
+    string old_name = weak_type->get_name();
+    weak_type->name = generate_temp();
+    weak_type->is_literal = true;
+    weak_type->is_const = true;
+
+    write_quadruple(ops::Bool_To_Int, old_name, "", weak_type->get_name());
+}
+
 void quadruple_generator::assign_op(symbol *dst, symbol *src)
 {
     // String => ALL
@@ -98,10 +135,28 @@ void quadruple_generator::assign_op(symbol *dst, symbol *src)
     write_quadruple(ops::Assign, src, NULL, dst);
 }
 
+symbol *quadruple_generator::binary_logical_op(ops operation, symbol *op1, symbol *op2)
+{
+    Bool(op1), Bool(op2);
+    symbol *temp = new symbol(generate_temp(), op1->scope_depth, types::Bool, true, true);
+    write_quadruple(operation, op1, op2, temp);
+    delete op1, delete op2;
+    return temp;
+}
+
+symbol *quadruple_generator::binary_bitwise_op(ops operation, symbol *op1, symbol *op2)
+{
+    BitAccessible(op1, op2);
+    symbol *temp = new symbol(generate_temp(), op1->scope_depth, op1->type, true, true);
+    write_quadruple(operation, op1, op2, temp);
+    delete op1, delete op2;
+    return temp;
+}
+
 symbol *quadruple_generator::not_op(symbol *op)
 {
     Bool(op);
-    symbol *temp = new symbol(generate_temp(), op->scope_depth, types::Bool, 1, 1);
+    symbol *temp = new symbol(generate_temp(), op->scope_depth, types::Bool, true, true);
     write_quadruple(ops::Not, op, NULL, temp);
     delete op;
     return temp;
