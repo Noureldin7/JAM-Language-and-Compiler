@@ -73,11 +73,8 @@ void quadruple_generator::Numeric(symbol *op1, symbol *op2)
     }
 }
 
-void quadruple_generator::BitAccessable(symbol* op1, symbol* op2) {
+void quadruple_generator::BitAccessible(symbol* op1, symbol* op2) {
     if (op1->type == types::String || op1->type == types::Function || op1->type == types::Double)
-    {
-        yyerror(("Invalid type " + typeNames[op1->type]).c_str());
-    }
     {
         yyerror(("Invalid type " + typeNames[op1->type]).c_str());
     }
@@ -149,7 +146,7 @@ symbol *quadruple_generator::binary_logical_op(ops operation, symbol *op1, symbo
 
 symbol *quadruple_generator::binary_bitwise_op(ops operation, symbol *op1, symbol *op2)
 {
-    BitAccessable(op1, op2);
+    BitAccessible(op1, op2);
     symbol *temp = new symbol(generate_temp(), op1->scope_depth, op1->type, true, true);
     write_quadruple(operation, op1, op2, temp);
     delete op1, delete op2;

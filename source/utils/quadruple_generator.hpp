@@ -18,7 +18,7 @@ public:
     void String(symbol* op);
     void Bool(symbol* op);
     void Numeric(symbol* op1,symbol* op2);
-    void BitAccessable(symbol* op1, symbol* op2);
+    void BitAccessible(symbol* op1, symbol* op2);
 
     void assign_op(symbol* dst, symbol* src);
     symbol* not_op(symbol* op);
