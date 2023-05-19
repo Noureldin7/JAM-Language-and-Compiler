@@ -1,9 +1,11 @@
 #include "quadruple_generator.hpp"
 
-quadruple_generator::quadruple_generator(string filename){
+quadruple_generator::quadruple_generator(string filename)
+{
     writer = fstream(filename);
 }
-void quadruple_generator::write_quadruple(ops operation, symbol *op1, symbol *op2, symbol *dst) {
+void quadruple_generator::write_quadruple(ops operation, symbol *op1, symbol *op2, symbol *dst)
+{
     string op1_str = op1 ? op1->get_name() : "";
     string op2_str = op2 ? op2->get_name() : "";
     string dst_str = dst ? dst->get_name() : "";
@@ -39,37 +41,38 @@ void quadruple_generator::Numeric(symbol *op1, symbol *op2)
         if (op1->type < op2->type)
         {
             op2->type = op1->type;
-            if(op2->type==types::Int)
+            if (op2->type == types::Int)
             {
-                write_quadruple(ops::To_Int,op2,NULL,NULL);
+                write_quadruple(ops::To_Int, op2, NULL, NULL);
             }
             else
             {
-                write_quadruple(ops::To_Double,op2,NULL,NULL);
+                write_quadruple(ops::To_Double, op2, NULL, NULL);
             }
         }
         else
         {
             op1->type = op2->type;
-            if(op1->type==types::Int)
+            if (op1->type == types::Int)
             {
-                write_quadruple(ops::To_Int,op1,NULL,NULL);
+                write_quadruple(ops::To_Int, op1, NULL, NULL);
             }
             else
             {
-                write_quadruple(ops::To_Double,op1,NULL,NULL);
+                write_quadruple(ops::To_Double, op1, NULL, NULL);
             }
         }
         // Print Coerce quad
     }
 }
 
-symbol* quadruple_generator::assign_op(symbol* dst, symbol* src){
+symbol *quadruple_generator::assign_op(symbol *dst, symbol *src)
+{
     // String => ALL
     // Integer => ALL but String
     // Double => ALL but String
     // Bool => ALL
-    if(src->type==dst->type)
+    if (src->type == dst->type)
     {
         // Direct Assignment
     }
@@ -83,7 +86,7 @@ symbol* quadruple_generator::assign_op(symbol* dst, symbol* src){
     }
     else if (dst->type == types::Double)
     {
-        if(src->type==types::String)
+        if (src->type == types::String)
         {
             yyerror("Cannot cast string to double");
         }
@@ -91,7 +94,7 @@ symbol* quadruple_generator::assign_op(symbol* dst, symbol* src){
     }
     else if (dst->type == types::Int)
     {
-        if(src->type==types::String)
+        if (src->type == types::String)
         {
             yyerror("Cannot cast string to int");
         }
@@ -102,7 +105,6 @@ symbol* quadruple_generator::assign_op(symbol* dst, symbol* src){
     // create new boolean symbol temp
     // return pointer to that new symbol
 }
-
 
 symbol *quadruple_generator::not_op(symbol *op)
 {
@@ -120,7 +122,7 @@ symbol *quadruple_generator::arth_op(ops operation, symbol *op1, symbol *op2)
     string quad = opNames[operation] + " " + op1->get_name() + ", " + op2->get_name() + ", " + dst->get_name();
     // Print the quad
     write_quadruple(operation, op1, op2, dst);
-    if(op1->is_literal)
+    if (op1->is_literal)
     {
         delete op1;
     }
@@ -227,9 +229,30 @@ symbol *quadruple_generator::Int(symbol *op)
 
 symbol *quadruple_generator::Double(symbol *op)
 {
-    // check that op is not string
-    // if it is not string call arth_op
-    // else throw error
+    op->is_const = true;
+    op->is_literal = false;
+    string old_name = op->get_name();
+    op->name = get_name();
+    switch (op->type)
+    {
+    case types::Int:
+        write_quadruple(ops::Int_To_Double, old_name, "", op->get_name());
+        break;
+    case types::Bool:
+        write_quadruple(ops::Bool_To_Double, old_name, "", op->get_name());
+        break;
+    case types::String:
+        yyerror("Cannot cast string to double");
+        break;
+    case types::Function:
+        yyerror("Cannot cast function to double");
+        break;
+    default:
+        yyerror("Unknown Type");
+        break;
+    }
+    op->type = types::Double;
+    return op;
 }
 
 symbol *quadruple_generator::String(symbol *op)
