@@ -3,11 +3,11 @@
 symbol::symbol()
 {
     this->name = "";
-    this->type = "";
+    this->type = types::Int;
     this->scope_depth = -1;
     this->is_const = false;
 }
-symbol::symbol(string name, int scope_depth, string type, bool is_const)
+symbol::symbol(string name, int scope_depth, types type, bool is_const)
 {
     this->name = name;
     this->type = type;
@@ -18,11 +18,11 @@ void symbol::print()
 {
     if(is_const)
     {
-        cout<<"Constant "<<type+" "<<name<<endl;
+        cout<<"Constant "<<typeNames[type]+" "<<name<<endl;
     }
     else
     {
-        cout<<type+" "<<name<<endl;
+        cout<<typeNames[type]+" "<<name<<endl;
     }
 }
 symbol_table::symbol_table()
@@ -47,7 +47,7 @@ void symbol_table::pop_scope()
         local_scope = &table.back();
     }
 }
-bool symbol_table::insert_symbol(string name, string type, bool is_const)
+bool symbol_table::insert_symbol(string name, types type, bool is_const)
 {
     if((*local_scope).find(name)!=(*local_scope).end())
     {
@@ -84,7 +84,7 @@ bool symbol_table::update_symbol(string name, symbol* rhs)
     }
     return false;
 }
-bool symbol_table::update_symbol(string name, string rhs_type)
+bool symbol_table::update_symbol(string name, types rhs_type)
 {
     auto retrieved_symbol = lookup_symbol(name);
     if(retrieved_symbol->is_const)
