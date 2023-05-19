@@ -1,6 +1,4 @@
 %{ 
-    #include "../source/utils/symbol_table.hpp"
-    #include "../source/utils/utils.hpp"
     #include "../source/utils/quadruple_generator.hpp"
     #include <stdlib.h>
     #include <stdio.h>
@@ -61,7 +59,7 @@ repeat_until_loop:
     REPEAT {$<stringVal>$ = strdup(quad_gen.write_label(false).data()); table.create_scope();} '{' root '}' {table.pop_scope();} UNTIL '(' expr ')'  {quad_gen.jmp_on_condition($9, false, string($<stringVal>2));}
 ;
 for_loop:
-    FOR  {table.create_scope();} '(' for_loop_stmt_1 ';' {$<stringVal>$ = strdup(quad_gen.write_label(false).data());} for_loop_stmt_2 ';' {string l = generate_laj_label(); quad_gen.jmp_on_condition($<stringVal>7, false, l); $<stringVal>$ = strdup(l.data());} for_loop_stmt_3 ')' '{' root '}' {quad_gen.jmp_unconditional(string($<stringVal>6)); table.pop_scope(); quad_gen.write_label(true, string($<stringVal>9));}
+    FOR  {table.create_scope();} '(' for_loop_stmt_1 ';' {$<stringVal>$ = strdup(quad_gen.write_label(false).data());} for_loop_stmt_2 ';' {string l = generate_laj_label(); quad_gen.jmp_on_condition($7, false, l); $<stringVal>$ = strdup(l.data());} for_loop_stmt_3 ')' '{' root '}' {quad_gen.jmp_unconditional(string($<stringVal>6)); table.pop_scope(); quad_gen.write_label(true, string($<stringVal>9));}
 ;
 for_loop_stmt_1:
     initialization      {;}
