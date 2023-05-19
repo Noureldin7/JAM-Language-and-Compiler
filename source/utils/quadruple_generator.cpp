@@ -9,12 +9,15 @@ void quadruple_generator::write_quadruple(ops operation, symbol *op1, symbol *op
     string op1_str = op1 ? op1->get_name() : "";
     string op2_str = op2 ? op2->get_name() : "";
     string dst_str = dst ? dst->get_name() : "";
-    write_quadruple(operation, op1_str, op2_str, dst_str);
+    write_quadruple(operation, op1_str, op2_str, dst_str, typeNames[dst->type]);
 }
 
-void quadruple_generator::write_quadruple(ops operation, string op1_str, string op2_str, string dst_str)
+void quadruple_generator::write_quadruple(ops operation, string op1_str, string op2_str, string dst_str, string type)
 {
-    string quad = opNames[operation] + " " + op1_str + ", " + op2_str + ", " + dst_str;
+    string prefix = type;
+    if (type != "\t\t") prefix += "\t";
+    if (type == "int") prefix += "\t";
+    string quad = prefix + opNames[operation] + " " + op1_str + ", " + op2_str + ", " + dst_str;
     writer << quad << "\n";
     // cout << quad << "\n";
 }
@@ -57,17 +60,17 @@ void quadruple_generator::Numeric(symbol *op1, symbol *op2)
         weak_type->is_const = true;
         if (strong_type->type == types::Int)
         {
-            write_quadruple(ops::Bool_To_Int, old_name, "", weak_type->get_name());
+            write_quadruple(ops::Bool_To_Int, old_name, "", weak_type->get_name(), typeNames[types::Int]);
         }
         else
         {
             if (weak_type->type == types::Bool)
             {
-                write_quadruple(ops::Bool_To_Double, old_name, "", weak_type->get_name());
+                write_quadruple(ops::Bool_To_Double, old_name, "", weak_type->get_name(), typeNames[types::Double]);
             }
             else
             {
-                write_quadruple(ops::Int_To_Double, old_name, "", weak_type->get_name());
+                write_quadruple(ops::Int_To_Double, old_name, "", weak_type->get_name(), typeNames[types::Double]);
             }
         }
     }
@@ -107,7 +110,7 @@ void quadruple_generator::BitAccessible(symbol* op1, symbol* op2) {
     weak_type->is_literal = true;
     weak_type->is_const = true;
 
-    write_quadruple(ops::Bool_To_Int, old_name, "", weak_type->get_name());
+    write_quadruple(ops::Bool_To_Int, old_name, "", weak_type->get_name(), typeNames[types::Int]);
 }
 
 void quadruple_generator::assign_op(symbol *dst, symbol *src)
@@ -202,11 +205,11 @@ void quadruple_generator::jmp_on_condition(symbol *op, bool on_true, string labe
     Bool(op);
     if (on_true)
     {
-        write_quadruple(ops::Jmp_True, op->get_name(), "", label);
+        write_quadruple(ops::Jmp_True, op->get_name(), "", label, typeNames[types::Bool]);
     }
     else
     {
-        write_quadruple(ops::Jmp_False, op->get_name(), "", label);
+        write_quadruple(ops::Jmp_False, op->get_name(), "", label, typeNames[types::Bool]);
     }
     delete op;
     return;
@@ -254,10 +257,10 @@ void quadruple_generator::Double(symbol *op)
     switch (op->type)
     {
     case types::Int:
-        write_quadruple(ops::Int_To_Double, old_name, "", op->get_name());
+        write_quadruple(ops::Int_To_Double, old_name, "", op->get_name(), "\t\t");
         break;
     case types::Bool:
-        write_quadruple(ops::Bool_To_Double, old_name, "", op->get_name());
+        write_quadruple(ops::Bool_To_Double, old_name, "", op->get_name(), "\t\t");
         break;
     case types::String:
         yyerror("Cannot cast string to double");
@@ -274,14 +277,14 @@ void quadruple_generator::Double(symbol *op)
 
 void quadruple_generator::jmp_unconditional(string label)
 {
-    write_quadruple(ops::Jmp, label, "", "");
+    write_quadruple(ops::Jmp, label, "", "", "\t\t");
 }
 
 void quadruple_generator::push(symbol *op)
 {
     if (op->type == types::Function)
         yyerror("Error: Function can't be pushed");
-    write_quadruple(ops::Push, op->get_name(), "", "");
+    write_quadruple(ops::Push, op->get_name(), "", "", typeNames[op->type]);
     delete op;
 }
 
@@ -290,18 +293,18 @@ symbol *quadruple_generator::pop(symbol *op)
 {
     if (op->type == types::Function)
         yyerror("Error: Function can't be popped");
-    write_quadruple(ops::Pop, "", "", op->get_name());
+    write_quadruple(ops::Pop, "", "", op->get_name(), typeNames[op->type]);
     return op;
 }
 
 void quadruple_generator::call(symbol *op)
 {
-    write_quadruple(ops::Call,op->label,"","");
+    write_quadruple(ops::Call,op->label,"","", "\t\t");
     delete op;
 }
 void quadruple_generator::ret()
 {
-    write_quadruple(ops::Ret,"","","");
+    write_quadruple(ops::Ret,"","","", "\t\t");
 }
 
 string quadruple_generator::write_label(bool is_laj, string label)
@@ -327,10 +330,10 @@ void quadruple_generator::Int(symbol *op)
     switch (op->type)
     {
     case types::Double:
-        write_quadruple(ops::Double_To_Int, old_name, "", op->get_name());
+        write_quadruple(ops::Double_To_Int, old_name, "", op->get_name(), typeNames[types::Int]);
         break;
     case types::Bool:
-        write_quadruple(ops::Bool_To_Int, old_name, "", op->get_name());
+        write_quadruple(ops::Bool_To_Int, old_name, "", op->get_name(), typeNames[types::Int]);
         break;
     case types::String:
         yyerror("Cannot cast string to int");
@@ -356,13 +359,13 @@ void quadruple_generator::String(symbol *op)
     switch (op->type)
     {
     case types::Bool:
-        write_quadruple(ops::Bool_To_String, old_name, "", op->get_name());
+        write_quadruple(ops::Bool_To_String, old_name, "", op->get_name(), typeNames[types::String]);
         break;
     case types::Int:
-        write_quadruple(ops::Int_To_String, old_name, "", op->get_name());
+        write_quadruple(ops::Int_To_String, old_name, "", op->get_name(), typeNames[types::String]);
         break;
     case types::Double:
-        write_quadruple(ops::Double_To_String, old_name, "", op->get_name());
+        write_quadruple(ops::Double_To_String, old_name, "", op->get_name(), typeNames[types::String]);
         break;
     case types::Function:
         yyerror("Error: Can't convert function to string");
@@ -385,13 +388,13 @@ void quadruple_generator::Bool(symbol *op)
     switch (op->type)
     {
     case types::String:
-        write_quadruple(ops::String_To_Bool, old_name, "", op->get_name());
+        write_quadruple(ops::String_To_Bool, old_name, "", op->get_name(), typeNames[types::Bool]);
         break;
     case types::Int:
-        write_quadruple(ops::Int_To_Bool, old_name, "", op->get_name());
+        write_quadruple(ops::Int_To_Bool, old_name, "", op->get_name(), typeNames[types::Bool]);
         break;
     case types::Double:
-        write_quadruple(ops::Double_To_Bool, old_name, "", op->get_name());
+        write_quadruple(ops::Double_To_Bool, old_name, "", op->get_name(), typeNames[types::Bool]);
         break;
     case types::Function:
         yyerror("Error: Are you retarded?");

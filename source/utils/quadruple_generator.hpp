@@ -7,7 +7,7 @@
 class quadruple_generator {
     ofstream writer;
     void write_quadruple(ops operation, symbol *op1, symbol *op2, symbol *dst);
-    void write_quadruple(ops operation, string op1_str, string op2_str, string dst_str);
+    void write_quadruple(ops operation, string op1_str, string op2_str, string dst_str, string type);
 public:
     quadruple_generator(string filename);
     // these print conversion quadruples to file
