@@ -45,14 +45,16 @@ enum types
     Int,
     Bool,
     String,
-    Function
+    Function,
+    Void
 };
 const std::string typeNames[] = {
     "double",
     "int",
     "bool",
     "string",
-    "function"
+    "function",
+    "void"
 };
 const std::string opNames[] = {
     "CALL",
