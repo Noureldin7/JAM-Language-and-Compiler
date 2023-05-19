@@ -7,6 +7,13 @@ symbol::symbol()
     this->scope_depth = -1;
     this->is_const = false;
 }
+symbol::symbol(symbol* symb)
+{
+    this->name = symb->name;
+    this->type = symb->type;
+    this->scope_depth = symb->scope_depth;
+    this->is_const = symb->is_const;
+}
 symbol::symbol(string name, int scope_depth, types type, bool is_const)
 {
     this->name = name;
@@ -27,25 +34,29 @@ void symbol::print()
 }
 symbol_table::symbol_table()
 {
-    table = vector(1,unordered_map<string,symbol>());
-    local_scope = &table.back();
+    scopes = vector(1,unordered_map<string,symbol>());
+    local_scope = &scopes.back();
 }
 void symbol_table::create_scope()
 {
-    table.push_back(unordered_map<string,symbol>());
-    local_scope = &table.back();
+    scopes.push_back(unordered_map<string,symbol>());
+    local_scope = &scopes.back();
 }
 void symbol_table::pop_scope()
 {
-    if(table.size()==1)
+    if(scopes.size()==1)
     {
         return;
     }
     else
     {
-        table.pop_back();
-        local_scope = &table.back();
+        scopes.pop_back();
+        local_scope = &scopes.back();
     }
+}
+int symbol_table::get_depth()
+{
+    return scopes.size()-1;
 }
 bool symbol_table::insert_symbol(string name, types type, bool is_const)
 {
@@ -53,12 +64,12 @@ bool symbol_table::insert_symbol(string name, types type, bool is_const)
     {
         return false;
     }
-    (*local_scope)[name] = symbol(name,table.size()-1,type,is_const);
+    (*local_scope)[name] = symbol(name,scopes.size()-1,type,is_const);
     return true;
 }
 symbol* symbol_table::lookup_symbol(string name)
 {
-    for (auto itr = table.rbegin(); itr < table.rend(); itr++)
+    for (auto itr = scopes.rbegin(); itr < scopes.rend(); itr++)
     {
         if((*itr).find(name)!=(*itr).end())
         {

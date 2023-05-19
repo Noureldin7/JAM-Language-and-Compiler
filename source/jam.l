@@ -37,7 +37,6 @@ default                                                     {return DEFAULT;}
 void                                                        {return VOID;}
 return                                                      {return RETURN;}
 enum                                                        {return ENUM;}
-\'.\'                                                       {return SINGLE_CHAR;}
 (ඞ[^\n\r]*)                                                 ;
 {symbols}                                                   {return *yytext;}
 {string}                                                    {
@@ -49,11 +48,11 @@ enum                                                        {return ENUM;}
                                                                 return ID;
                                                             }
 {digit}+\.{digit}+                                          {
-                                                                yylval.doubleVal = atof(yytext);
+                                                                yylval.stringVal = strdup(yytext);
                                                                 return DOUBLE_VAL;
                                                             }
 {digit}+                                                    {
-                                                                yylval.intVal = atoi(yytext);
+                                                                yylval.stringVal = strdup(yytext);
                                                                 return INT_VAL;
                                                             }
 {whitespace}                                                ;

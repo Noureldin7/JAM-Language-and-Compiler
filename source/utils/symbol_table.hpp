@@ -13,13 +13,14 @@ public:
     // Index of the symbol's scope in the scope vector
     int scope_depth;
     symbol();
+    symbol(symbol*);
     symbol(string name, int scope_depth, types type, bool is_const);
     void print();
 };
 class symbol_table
 {
     // Scope vector
-    vector<unordered_map<string, symbol>> table;
+    vector<unordered_map<string, symbol>> scopes;
     // Pointer to last scope in scope vector
     unordered_map<string, symbol>* local_scope;
 public:
@@ -29,6 +30,8 @@ public:
     void create_scope();
     // Pop last scope in scope vector
     void pop_scope();
+    // Returns local scope's depth
+    int get_depth();
     // Insert given symbol into the local scope
     // Returns true on success and false on failure
     bool insert_symbol(string name, types type, bool is_const=false);

@@ -14,26 +14,26 @@
     string current_enum;
 %}
 %union {
-    int intVal;
+    types typeVal;
+    symbol* symbVal;
     char* stringVal;
-    double doubleVal;
 }
 // Reserved Words
 %token FOR WHILE REPEAT UNTIL EQ NE GT LT GTE LTE AND OR CONST INT DOUBLE STRING BOOL VOID RETURN ENUM
 %token IF ELSE SWITCH CASE DEFAULT BREAK
-%token <intVal> INT_VAL <stringVal> ID <doubleVal> DOUBLE_VAL <stringVal> STRING_VAL
+%token <stringVal> INT_VAL <stringVal> ID <stringVal> DOUBLE_VAL <stringVal> STRING_VAL
 %type <stringVal> for_loop_stmt_1
 %type <stringVal> for_loop_stmt_2
-%type <intVal> expr
-%type <intVal> expr_AND
-%type <intVal> expr_bitwise_OR
-%type <intVal> expr_bitwise_XOR
-%type <intVal> expr_bitwise_AND
-%type <intVal> expr_OR
-%type <intVal> expr_ADD
-%type <intVal> expr_MUL
-%type <intVal> literal
-%type <stringVal> type
+%type <stringVal> expr
+%type <stringVal> expr_AND
+%type <stringVal> expr_bitwise_OR
+%type <stringVal> expr_bitwise_XOR
+%type <stringVal> expr_bitwise_AND
+%type <stringVal> expr_OR
+%type <stringVal> expr_ADD
+%type <stringVal> expr_MUL
+%type <symbVal> literal
+%type <typeVal> type
 %type <stringVal> function_declaration_prototype
 %%
 root:
@@ -55,7 +55,7 @@ statement:
     |
     enum_declaration ';'                   {;}
     |
-    initialization ';'                  {table.print();}
+    initialization ';'                  {;}
     |
     {cout << "IF statement started" <<endl;} if_statement                        {cout << "IF statement ended" <<endl;}
     |
@@ -179,89 +179,89 @@ default_stmt: DEFAULT ':' root BREAK ';'
 //     CONST type ID             {symbol_table[string($3)] = ;} //TODO: modify symbol table to accept an uninitialized variable
 //     |
 //     type ID            {symbol_table[string($2)] = ;}
+type:
+    INT                         {$$ = types::Int;}
+    |
+    DOUBLE                      {$$ = types::Double;}
+    |
+    STRING                      {$$ = types::String;}
+    |
+    BOOL                        {$$ = types::Bool;}
 assignment:
     ID '=' expr             {;}
-type:
-    INT                         {$$ = strdup(string("int").data());}
-    |
-    DOUBLE                      {$$ = strdup(string("double").data());}
-    |
-    STRING                      {$$ = strdup(string("string").data());}
-    |
-    BOOL                        {$$ = strdup(string("bool").data());}
 expr:
     expr_OR                         {;}
 expr_OR:
-    expr_OR OR expr_AND           {cout<<"OR ";}
+    expr_OR OR expr_AND           {;}
     |
     expr_AND                         {;}
 expr_AND:
-    expr_AND AND expr_bitwise_OR           {cout<<"AND ";}
+    expr_AND AND expr_bitwise_OR           {;}
     |
     expr_bitwise_OR                         {;}
 expr_bitwise_OR:
-    expr_bitwise_OR '|' expr_bitwise_XOR           {cout<<"or ";}
+    expr_bitwise_OR '|' expr_bitwise_XOR           {;}
     |
     expr_bitwise_XOR                         {;}
 expr_bitwise_XOR:
-    expr_bitwise_XOR '^' expr_bitwise_AND           {cout<<"xor ";}
+    expr_bitwise_XOR '^' expr_bitwise_AND           {;}
     |
     expr_bitwise_AND                         {;}
 expr_bitwise_AND:
-    expr_bitwise_AND '&' expr_EQ           {cout<<"and ";}
+    expr_bitwise_AND '&' expr_EQ           {;}
     |
     expr_EQ                         {;}
 expr_EQ:
-    expr_EQ EQ expr_REL           {cout<<"EQ ";}
+    expr_EQ EQ expr_REL           {;}
     |
-    expr_EQ NE expr_REL           {cout<<"NE ";}
+    expr_EQ NE expr_REL           {;}
     |
     expr_REL                         {;}
 expr_REL:
-    expr_REL GT expr_ADD           {cout<<"GT ";}
+    expr_REL GT expr_ADD           {;}
     |
-    expr_REL LT expr_ADD           {cout<<"LT ";}
+    expr_REL LT expr_ADD           {;}
     |
-    expr_REL GTE expr_ADD           {cout<<"GTE ";}
+    expr_REL GTE expr_ADD           {;}
     |
-    expr_REL LTE expr_ADD           {cout<<"LTE ";}
+    expr_REL LTE expr_ADD           {;}
     |
     expr_ADD                         {;}
 
 expr_ADD:
-    expr_ADD '+' expr_MUL           {cout<<"ADD ";}
+    expr_ADD '+' expr_MUL           {;}
     |
-    expr_ADD '-' expr_MUL           {cout<<"SUB ";}
+    expr_ADD '-' expr_MUL           {;}
     |
     expr_MUL                         {;}
 expr_MUL:
-    expr_MUL '*' expr_NOT             {cout<<"MUL ";}
+    expr_MUL '*' expr_NOT             {;}
     |
-    expr_MUL '/' expr_NOT             {cout<<"DIV ";}
+    expr_MUL '/' expr_NOT             {;}
     |
     expr_NOT                      {;}
 expr_NOT:
     '!' ID                        {;}
     |
-    literal                       {;}
+    literal                       {cout<<$1->name<<endl;}
     |
     '(' expr_OR ')'               {;}
 literal:
-    INT_VAL                      {;}
+    INT_VAL                      {$$ = new symbol($1,table.get_depth(),types::Int,true);}
     |
-    DOUBLE_VAL                      {;}
+    DOUBLE_VAL                      {$$ = new symbol($1,table.get_depth(),types::Double,true);}
     |
-    STRING_VAL                      {;}
+    STRING_VAL                      {$$ = new symbol($1,table.get_depth(),types::String,true);}
     |
     ID '.' ID                       {
                                     auto v = enum_table.find(string($1));
                                     if(v == enum_table.end()) yyerror("Enum not found");
                                     auto e = find(v->second.begin(), v->second.end(), string($3));
                                     if(e == v->second.end()) yyerror("Enum value not found");
-                                    $$ = distance(v->second.begin(), e);
+                                    $$ = new symbol(to_string(distance(v->second.begin(), e)),0,types::String,true);
                                     }
     |
-    ID                           {;}
+    ID                           {$$ = new symbol(table.lookup_symbol(string($1)));}
 %%
 void yyerror(char const *s){
     extern int yylineno;
