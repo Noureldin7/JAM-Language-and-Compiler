@@ -105,7 +105,6 @@ symbol symbol_table::update_symbol(string name, symbol* rhs)
     {
         string error = "Variable \""+name+"\" is Constant";
         yyerror(error.c_str());
-        return false;
     }
     return retrieved_symbol;
 }
