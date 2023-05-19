@@ -23,6 +23,17 @@ symbol::symbol(string name, int scope_depth, types type, bool is_const)
     this->scope_depth = scope_depth;
     this->is_const = is_const;
 }
+string symbol::get_name()
+{
+    if(is_literal)
+    {
+        return name;
+    }
+    else
+    {
+        return name+"_"+to_string(scope_depth);
+    }
+}
 void symbol::print()
 {
     if(is_const)

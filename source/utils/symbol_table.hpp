@@ -9,13 +9,15 @@ class symbol
 public:
     string name;
     types type;
-    // string value;
     bool is_const;
+    bool is_literal;
     // Index of the symbol's scope in the scope vector
     int scope_depth;
+    vector<types> params;
     symbol();
     symbol(symbol*);
     symbol(string name, int scope_depth, types type, bool is_const);
+    string get_name();
     void print();
 };
 class symbol_table
