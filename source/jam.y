@@ -33,6 +33,8 @@
 %type <stringVal> expr_OR
 %type <stringVal> expr_ADD
 %type <stringVal> expr_MUL
+%type <stringVal> expr_NOT
+%type <stringVal> expr_lit
 %type <symbVal> literal
 %type <typeVal> type
 %type <stringVal> function_declaration_prototype
@@ -242,9 +244,11 @@ expr_MUL:
     |
     expr_NOT                      {;}
 expr_NOT:
-    '!' ID                        {;}
+    '!' expr_lit                        {;}
     |
-    literal                       {cout<<$1->name<<endl;}
+    expr_lit                            {;}
+expr_lit:
+    literal                       {;}
     |
     '(' expr_OR ')'               {;}
 literal:
