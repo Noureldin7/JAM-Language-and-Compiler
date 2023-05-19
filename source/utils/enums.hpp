@@ -36,5 +36,5 @@ const std::string opNames[] = {"EQ", "NEQ", "LT", "GTE", "LTE", "GT","JMP_TRUE",
 // gt x , 5, t1
 // eq y, 0, t2 
 // or t1 , t2 , t3 --> jmp false t3, label2
-
+// $$ = new symbol(*$1); delete $1;
 #endif
