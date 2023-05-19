@@ -80,8 +80,8 @@ const std::string opNames[] = {
     "BOOL_TO_INT",
     "DOUBLE_TO_INT",
     "BOOL_TO_DOUBLE",
-    "INT_To_DOUBLE",
-    "BOOL_To_STRING",
+    "INT_TO_DOUBLE",
+    "BOOL_TO_STRING",
     "INT_TO_STRING",
     "DOUBLE_TO_STRING",
 };
