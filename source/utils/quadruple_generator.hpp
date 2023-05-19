@@ -21,6 +21,8 @@ public:
     symbol* arth_op(ops operation , symbol* op1 , symbol* op2);
     symbol* plus_op(symbol* op1 , symbol* op2);
     symbol* concat_op(symbol* op1 , symbol* op2);
-
+    symbol* relational_op(ops operation , symbol* op1 , symbol* op2);
+    void jmp_on_condition(symbol* op , bool on_true , string label);
     ~quadruple_generator();
 };
+
