@@ -3,6 +3,7 @@
 #define enums_H__
 enum ops
 {
+    Assign,
     Eq,
     Neq,
     Lt,
@@ -24,6 +25,16 @@ enum ops
     Concat,
     Push,
     Pop,
+    Int_To_Bool,
+    Double_To_Bool,
+    String_To_Bool,
+    Bool_To_Int,
+    Double_To_Int,
+    Bool_To_Double,
+    Int_To_Double,
+    Bool_To_String,
+    Int_To_String,
+    Double_To_String,
 };
 enum types
 {
@@ -33,8 +44,47 @@ enum types
     String,
     Function
 };
-const std::string typeNames[] = {"double", "int", "bool", "string", "function"};
-const std::string opNames[] = {"EQ", "NEQ", "LT", "GTE", "LTE", "GT","JMP_TRUE","JMP_FALSE","JMP","ADD", "SUB", "MUL", "DIV", "AND", "OR", "NOT", "ANDB", "ORB","CONCAT", "PUSH", "POP"};
+const std::string typeNames[] = {
+    "double",
+    "int",
+    "bool",
+    "string",
+    "function"
+};
+const std::string opNames[] = {
+    "ASS",
+    "EQ",
+    "NEQ",
+    "LT",
+    "GTE",
+    "LTE",
+    "GT",
+    "JMP_TRUE",
+    "JMP_FALSE",
+    "JMP",
+    "ADD",
+    "SUB",
+    "MUL",
+    "DIV",
+    "AND",
+    "OR",
+    "NOT", 
+    "ANDB", 
+    "ORB",
+    "CONCAT",
+    "PUSH",
+    "POP",
+    "INT_TO_BOOL",
+    "DOUBLE_TO_BOOL",
+    "STRING_TO_BOOL",
+    "BOOL_TO_INT",
+    "DOUBLE_TO_INT",
+    "BOOL_TO_DOUBLE",
+    "INT_TO_DOUBLE",
+    "BOOL_TO_STRING",
+    "INT_TO_STRING",
+    "DOUBLE_TO_STRING",
+};
 //(int) op + 1- 2 * (op % 2) 
 // if(x > 5 || y ==0) -->
 // gt x , 5, t1

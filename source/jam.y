@@ -263,7 +263,7 @@ literal:
                                     if(v == enum_table.end()) yyerror("Enum not found");
                                     auto e = find(v->second.begin(), v->second.end(), string($3));
                                     if(e == v->second.end()) yyerror("Enum value not found");
-                                    $$ = new symbol(to_string(distance(v->second.begin(), e)),table.get_depth(),types::Int,true);
+                                    $$ = new symbol(to_string(distance(v->second.begin(), e)),table.get_depth(),types::Int,true,true);
                                     }
     |
     ID                           {$$ = new symbol(table.lookup_symbol(string($1)));}

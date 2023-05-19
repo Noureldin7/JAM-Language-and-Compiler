@@ -1,6 +1,8 @@
 #include "quadruple_generator.hpp"
 
-
+quadruple_generator::quadruple_generator(string filename){
+    writer = fstream(filename);
+}
 void quadruple_generator::write_quadruple(ops operation, symbol *op1, symbol *op2, symbol *dst) {
     string op1_str = op1 ? op1->get_name() : "";
     string op2_str = op2 ? op2->get_name() : "";
@@ -35,45 +37,70 @@ void quadruple_generator::Numeric(symbol*op1,symbol*op2){
         if(op1->type < op2->type)
         {
             op2->type = op1->type;
+            if(op2->type==types::Int)
+            {
+                write_quadruple(ops::To_Int,op2,NULL,NULL);
+            }
+            else
+            {
+                write_quadruple(ops::To_Double,op2,NULL,NULL);
+            }
         }
         else
         {
             op1->type = op2->type;
+            if(op1->type==types::Int)
+            {
+                write_quadruple(ops::To_Int,op1,NULL,NULL);
+            }
+            else
+            {
+                write_quadruple(ops::To_Double,op1,NULL,NULL);
+            }
         }
         // Print Coerce quad
     }
 }
 
 symbol* quadruple_generator::assign_op(symbol* dst, symbol* src){
+    // String => ALL
+    // Integer => ALL but String
+    // Double => ALL but String
+    // Bool => ALL
     if(src->type==dst->type)
     {
         // Direct Assignment
     }
     else if(dst->type==types::String)
     {
-        yyerror("No");
+        src = String(src);
     }
     else if(dst->type==types::Bool)
     {
-        Bool(src);
+        src = Bool(src);
     }
     else if(dst->type==types::Double)
     {
-        Double(src);
+        if(src->type==types::String)
+        {
+            yyerror("Cannot cast string to double");
+        }
+        src = Double(src);
     }
     else if(dst->type==types::Int)
     {
-        Int(src);
+        if(src->type==types::String)
+        {
+            yyerror("Cannot cast string to int");
+        }
+        src = Int(src);
     }
+    write_quadruple(ops::Assign, src, NULL, dst);
     // write it in quadruples file
     // create new boolean symbol temp 
     // return pointer to that new symbol 
 }
 
-quadruple_generator::quadruple_generator(string filename)
-{
-    
-}
 
 symbol *quadruple_generator::not_op(symbol *op)
 {
@@ -89,6 +116,7 @@ symbol* quadruple_generator::arth_op(ops operation , symbol* op1 , symbol* op2){
     symbol* dst = new symbol(generate_temp(),op1->scope_depth,op1->type,false,true);
     string quad = opNames[operation]+" "+op1->get_name()+", "+op2->get_name()+", "+dst->get_name();
     // Print the quad
+    write_quadruple(operation, op1, op2, dst);
     if(op1->is_literal)
     {
         delete op1;
@@ -198,12 +226,13 @@ void quadruple_generator::Bool(symbol *op) {
     }
 }
 
-quadruple_generator::~quadruple_generator() {
-
+quadruple_generator::~quadruple_generator()
+{
+    writer.close();
 }
 
 // list of needed quadruples generating functions
-// 1- assign_op --> NOUR
+//? 1- assign_op --> NOUR
 // 2- jmp op(label) --> NASHAR
 // 4- push_op --> NASHAR
 // 5- pop_op --> NASHAR
@@ -211,7 +240,7 @@ quadruple_generator::~quadruple_generator() {
 //? 7- relational_op -->(special cases for == and != (plus_op_like)) --> ATAREK
 // 8- bitwise_op(&,|,^) --> JOHN
 // 9- not_op{logical_op} --> JOHN
-// 10- arth_op(+,-,*,/) --> NOUR
+//? 10- arth_op(+,-,*,/) --> NOUR
 //? 11- plus_op(+) --> ATAREK
 //? 12- concat_op(+) --> ATAREK
 
