@@ -4,26 +4,6 @@
 #include "enums.hpp"
 using namespace std;
 
-// static private for label and temp names
-static int jal_label_count;
-static int laj_label_count;
-static int temp_count;
-// implement generate_label and generate_temp
-string generate_jal_label()
-{
-    string label =  "J"+to_string(jal_label_count);
-    jal_label_count++;
-    return label;
-}
-string generate_laj_label()
-{
-    return "L"+to_string(laj_label_count++);
-}
-string generate_temp()
-{
-    return "t"+to_string(temp_count++);
-}
-
 class symbol
 {
 public:
@@ -62,9 +42,6 @@ public:
     // Assign symbol to symbol
     // Returns true on success and false on failure
     bool update_symbol(string name, symbol* rhs);
-    // Assign literal to symbol
-    // Returns true on success and false on failure
-    bool update_symbol(string name, types rhs_type);
     // bool remove_symbol(string name);
 
     // Print the local scope

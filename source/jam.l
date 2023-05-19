@@ -1,7 +1,8 @@
 %{
     #include "../source/utils/symbol_table.hpp"
     #include <stdlib.h>
-    void yyerror(char const*);
+    // void yyerror(char const*);
+    #include "../source/utils/utils.hpp"
     #include "jam.tab.h"
 %}
 %option yylineno

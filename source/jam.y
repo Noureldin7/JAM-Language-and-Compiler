@@ -1,12 +1,13 @@
 %{ 
     #include "../source/utils/symbol_table.hpp"
+    #include "../source/utils/utils.hpp"
     #include <stdlib.h>
     #include <stdio.h>
     #include <cstring>
     #include <algorithm>
     using namespace std;
     int yylex(void);
-    void yyerror(char const *);
+    // void yyerror(char const *);
     symbol_table table;
     extern FILE* yyin;
     int functional_depth = 0;
@@ -263,11 +264,7 @@ literal:
     |
     ID                           {$$ = new symbol(table.lookup_symbol(string($1)));}
 %%
-void yyerror(char const *s){
-    extern int yylineno;
-    fprintf(stderr, "%s near line  %d\n",s,yylineno);
-    exit(-1);
-}
+
 int main(int argc, char * argv[])
 {
     char* filename = argv[1];

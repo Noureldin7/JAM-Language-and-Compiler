@@ -1,4 +1,5 @@
 int a = 1*2;
+int a = 5;
 const int b = 1;
 double c = 1.1+2.3;
 bool d = a==b;

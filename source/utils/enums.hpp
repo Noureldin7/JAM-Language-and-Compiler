@@ -1,26 +1,26 @@
 #include <string>
 #ifndef enums_H__
 #define enums_H__
-
 enum ops
 {
-    EQ,
-    NEQ,
-    LT,
-    GTE,
-    LTE,
-    GT,
-    JMP_TRUE,
-    JMP_FALSE,
-    JMP,
-    ADD,
-    SUB,
-    MUL,
-    DIV,
-    AND,
-    OR,
-    BIT_AND,
-    BIT_OR,
+    Eq,
+    Neq,
+    Lt,
+    Gte,
+    Lte,
+    Gt,
+    Jmp_True,
+    Jmp_False,
+    Jmp,
+    Add,
+    Sub,
+    Mul,
+    Div,
+    And,
+    Or,
+    Not,
+    Bit_And,
+    Bit_Or,
 };
 enum types
 {
@@ -30,7 +30,7 @@ enum types
     Bool
 };
 const std::string typeNames[] = {"int", "double", "string", "bool"};
-const std::string opNames[] = {"EQ", "NEQ", "LT", "GTE", "LTE", "GT","JMP_TRUE","JMP_FALSE","JMP","ADD", "SUB", "MUL", "DIV", "AND", "OR", "ANDB", "ORB"};
+const std::string opNames[] = {"EQ", "NEQ", "LT", "GTE", "LTE", "GT","JMP_TRUE","JMP_FALSE","JMP","ADD", "SUB", "MUL", "DIV", "AND", "OR", "NOT", "ANDB", "ORB"};
 //(int) op + 1- 2 * (op % 2) 
 // if(x > 5 || y ==0) -->
 // gt x , 5, t1
