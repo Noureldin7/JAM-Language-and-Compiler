@@ -1,5 +1,9 @@
 #include "quadruple_generator.hpp"
 
+quadruple_generator::quadruple_generator(string filename){
+    writer = fstream(filename);
+}
+
 void quadruple_generator::Numeric(symbol*op1,symbol*op2){
     // If not arithmetic => yyerror
     if(op1->type==types::String)
@@ -31,13 +35,17 @@ void quadruple_generator::Numeric(symbol*op1,symbol*op2){
 }
 
 symbol* quadruple_generator::assign_op(symbol* dst, symbol* src){
+    // String => ALL
+    // Integer => ALL but String
+    // Double => ALL but String
+    // Bool => ALL
     if(src->type==dst->type)
     {
         // Direct Assignment
     }
     else if(dst->type==types::String)
     {
-        yyerror("No");
+        String(src);
     }
     else if(dst->type==types::Bool)
     {
@@ -45,10 +53,18 @@ symbol* quadruple_generator::assign_op(symbol* dst, symbol* src){
     }
     else if(dst->type==types::Double)
     {
+        if(src->type==types::String)
+        {
+            yyerror("Cannot cast string to double");
+        }
         Double(src);
     }
     else if(dst->type==types::Int)
     {
+        if(src->type==types::String)
+        {
+            yyerror("Cannot cast string to int");
+        }
         Int(src);
     }
     // write it in quadruples file
@@ -179,6 +195,7 @@ symbol *quadruple_generator::Bool(symbol *op)
 
 quadruple_generator::~quadruple_generator()
 {
+    writer.close();
 }
 
 // list of needed quadruples generating functions
