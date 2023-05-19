@@ -6,8 +6,8 @@
 
 class quadruple_generator {
     fstream writer;
-    void quadruple_generator::write_quadruple(ops operation, symbol *op1, symbol *op2, symbol *dst);
-    void quadruple_generator::write_quadruple(ops operation, string op1_str, string op2_str, string dst_str);
+    void write_quadruple(ops operation, symbol *op1, symbol *op2, symbol *dst);
+    void write_quadruple(ops operation, string op1_str, string op2_str, string dst_str);
 public:
     quadruple_generator(string filename);
     // these print conversion quadruples to file
@@ -26,6 +26,9 @@ public:
     symbol* concat_op(symbol* op1 , symbol* op2);
     symbol* relational_op(ops operation , symbol* op1 , symbol* op2);
     void jmp_on_condition(symbol* op , bool on_true , string label);
+    void jmp_unconditional(string label);
+    void push(symbol *op);
+    symbol* pop(symbol *op);
     ~quadruple_generator();
 };
 

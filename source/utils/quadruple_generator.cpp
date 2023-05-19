@@ -10,23 +10,25 @@ void quadruple_generator::write_quadruple(ops operation, symbol *op1, symbol *op
     write_quadruple(operation, op1_str, op2_str, dst_str);
 }
 
-void quadruple_generator::write_quadruple(ops operation, string op1_str, string op2_str, string dst_str) {
+void quadruple_generator::write_quadruple(ops operation, string op1_str, string op2_str, string dst_str)
+{
     string quad = opNames[operation] + " " + op1_str + ", " + op2_str + ", " + dst_str;
     // writer << quad << "\n";
     cout << quad << "\n";
 }
 
-void quadruple_generator::Numeric(symbol*op1,symbol*op2){
+void quadruple_generator::Numeric(symbol *op1, symbol *op2)
+{
     // If not arithmetic => yyerror
-    if(op1->type==types::String)
+    if (op1->type == types::String)
     {
-        yyerror(("Invalid type "+typeNames[op1->type]).c_str());
+        yyerror(("Invalid type " + typeNames[op1->type]).c_str());
     }
-    if(op2->type==types::String)
+    if (op2->type == types::String)
     {
-        yyerror(("Invalid type "+typeNames[op2->type]).c_str());
+        yyerror(("Invalid type " + typeNames[op2->type]).c_str());
     }
-    if(op1->type==op2->type)
+    if (op1->type == op2->type)
     {
         // No coercion needed
         return;
@@ -34,7 +36,7 @@ void quadruple_generator::Numeric(symbol*op1,symbol*op2){
     else
     {
         // Coerce into stronger type (min value)
-        if(op1->type < op2->type)
+        if (op1->type < op2->type)
         {
             op2->type = op1->type;
             if(op2->type==types::Int)
@@ -71,15 +73,15 @@ symbol* quadruple_generator::assign_op(symbol* dst, symbol* src){
     {
         // Direct Assignment
     }
-    else if(dst->type==types::String)
+    else if (dst->type == types::String)
     {
         src = String(src);
     }
-    else if(dst->type==types::Bool)
+    else if (dst->type == types::Bool)
     {
         src = Bool(src);
     }
-    else if(dst->type==types::Double)
+    else if (dst->type == types::Double)
     {
         if(src->type==types::String)
         {
@@ -87,7 +89,7 @@ symbol* quadruple_generator::assign_op(symbol* dst, symbol* src){
         }
         src = Double(src);
     }
-    else if(dst->type==types::Int)
+    else if (dst->type == types::Int)
     {
         if(src->type==types::String)
         {
@@ -97,8 +99,8 @@ symbol* quadruple_generator::assign_op(symbol* dst, symbol* src){
     }
     write_quadruple(ops::Assign, src, NULL, dst);
     // write it in quadruples file
-    // create new boolean symbol temp 
-    // return pointer to that new symbol 
+    // create new boolean symbol temp
+    // return pointer to that new symbol
 }
 
 
@@ -110,23 +112,24 @@ symbol *quadruple_generator::not_op(symbol *op)
     // return pointer to that new symbol
 }
 // add , minus , mul , divide
-symbol* quadruple_generator::arth_op(ops operation , symbol* op1 , symbol* op2){
-    Numeric(op1,op2);
-    // create new symbol temp 
-    symbol* dst = new symbol(generate_temp(),op1->scope_depth,op1->type,false,true);
-    string quad = opNames[operation]+" "+op1->get_name()+", "+op2->get_name()+", "+dst->get_name();
+symbol *quadruple_generator::arth_op(ops operation, symbol *op1, symbol *op2)
+{
+    Numeric(op1, op2);
+    // create new symbol temp
+    symbol *dst = new symbol(generate_temp(), op1->scope_depth, op1->type, false, true);
+    string quad = opNames[operation] + " " + op1->get_name() + ", " + op2->get_name() + ", " + dst->get_name();
     // Print the quad
     write_quadruple(operation, op1, op2, dst);
     if(op1->is_literal)
     {
         delete op1;
     }
-    if(op2->is_literal)
+    if (op2->is_literal)
     {
         delete op2;
     }
     return dst;
-    // return pointer to that new symbol 
+    // return pointer to that new symbol
 }
 
 symbol *quadruple_generator::plus_op(symbol *op1, symbol *op2)
@@ -143,59 +146,79 @@ symbol *quadruple_generator::plus_op(symbol *op1, symbol *op2)
 
 symbol *quadruple_generator::concat_op(symbol *op1, symbol *op2)
 {
-    symbol *temp = String(op1);
-    symbol *temp2 = String(op2);
-    symbol *result = new symbol(generate_temp(), max(temp->scope_depth, temp2->scope_depth), types::String, 0, 0);
+    op1 = String(op1);
+    op2 = String(op2);
+    symbol *result = new symbol(generate_temp(), max(op1->scope_depth, op2->scope_depth), types::String, false, true);
     write_quadruple(ops::Concat, op1, op2, result);
-    // writer << opNames[ops::Concat] << "\t" << temp->get_name() << " , " << temp2->get_name() << " , " << result->get_name() << endl;
-    delete temp;
-    delete temp2;
+    delete op1;
+    delete op2;
     return result;
 }
 
 void quadruple_generator::jmp_on_condition(symbol *op, bool on_true, string label)
 {
-    symbol *temp = Bool(op);
+    op = Bool(op);
     if (on_true)
     {
-        write_quadruple(ops::Jmp_True,temp->get_name(),label,"");
-        // writer << opNames[ops::Jmp_True] << "\t" << temp->get_name() << " , " << label << endl;
+        write_quadruple(ops::Jmp_True, op->get_name(), "", label);
     }
     else
     {
-        write_quadruple(ops::Jmp_False,temp->get_name(),label,"");
-        // writer << opNames[ops::Jmp_False] << "\t" << temp->get_name() << " , " << label << endl;
+        write_quadruple(ops::Jmp_False, op->get_name(), "", label);
     }
-    delete temp;
+    delete op;
     return;
 }
 
 symbol *quadruple_generator::relational_op(ops operation, symbol *op1, symbol *op2)
 {
-    // gte x , 3 , t1 
-    symbol *result = new symbol(generate_temp(), max(op1->scope_depth, op2->scope_depth), types::Bool, 0, 0);
-    if(op1->type == types::Function || op2->type == types::Function){
+    // gte x , 3 , t1
+    symbol *result = new symbol(generate_temp(), max(op1->scope_depth, op2->scope_depth), types::Bool, false, true);
+    if (op1->type == types::Function || op2->type == types::Function)
+    {
         yyerror("Error: Function can't be compared");
     }
     if (op1->type != op2->type)
     {
-        if(op1->type == types::String || op2->type == types::String){
+        if (op1->type == types::String || op2->type == types::String)
+        {
             yyerror("Error: String can't be compared with other types");
         }
-        if(op1->type == types::Double || op2->type == types::Double){
+        if (op1->type == types::Double || op2->type == types::Double)
+        {
             op1 = Double(op1);
             op2 = Double(op2);
         }
-        else{
+        else
+        {
             op1 = Int(op1);
             op2 = Int(op2);
         }
     }
-    write_quadruple(operation,op1,op2,result);
-    writer << opNames[operation] << "\t" << op1->get_name() << " , " << op2->get_name() << " , " << result->get_name() << endl;
+    write_quadruple(operation, op1, op2, result);
     delete op1;
     delete op2;
     return result;
+}
+
+void quadruple_generator::jmp_unconditional(string label)
+{
+    write_quadruple(ops::Jmp, label, "", "");
+}
+
+void quadruple_generator::push(symbol *op)
+{
+    if (op->type == types::Function)
+        yyerror("Error: Function can't be pushed");
+    write_quadruple(ops::Push, op->get_name(), "", "");
+}
+
+symbol *quadruple_generator::pop(symbol *op)
+{
+    if (op->type == types::Function)
+        yyerror("Error: Function can't be popped");
+    write_quadruple(ops::Pop, "", "", op->get_name());
+    return op;
 }
 
 symbol *quadruple_generator::Int(symbol *op)
@@ -234,7 +257,7 @@ quadruple_generator::~quadruple_generator()
 // 4- push_op --> NASHAR
 // 5- pop_op --> NASHAR
 // 6- logical_op(&&,||)-->JOHN
-//? 7- relational_op -->(special cases for == and != (plus_op_like)) --> ATAREK
+// DONE: 7- relational_op -->(special cases for == and != (plus_op_like)) --> ATAREK
 // 8- bitwise_op(&,|,^) --> JOHN
 // 9- not_op{logical_op} --> JOHN
 //? 10- arth_op(+,-,*,/) --> NOUR
