@@ -58,10 +58,10 @@ statement:
     {table.create_scope();} '{' root '}' {table.pop_scope();}
 ;
 repeat_until_loop:
-    REPEAT {$<stringVal>$ = strdup(write_label(false).data()); table.create_scope();} '{' root '}' {table.pop_scope();} UNTIL '(' expr ')'  {quad_gen.jmp_on_condition($9, false, string($<stringVal>2));}
+    REPEAT {$<stringVal>$ = strdup(quad_gen.write_label(false).data()); table.create_scope();} '{' root '}' {table.pop_scope();} UNTIL '(' expr ')'  {quad_gen.jmp_on_condition($9, false, string($<stringVal>2));}
 ;
 for_loop:
-    FOR  {table.create_scope();} '(' for_loop_stmt_1 ';' {$<stringVal>$ = strdup(write_label(false).data());} for_loop_stmt_2 ';' {string l = generate_laj_label(); quad_gen.jmp_on_condition($<stringVal>7, false, l); $<stringVal>$ = strdup(l.data());} for_loop_stmt_3 ')' '{' root '}' {quad_gen.jmp_unconditional(string($<stringVal>6)); table.pop_scope(); quad_gen.write_label(true, string($<stringVal>9));}
+    FOR  {table.create_scope();} '(' for_loop_stmt_1 ';' {$<stringVal>$ = strdup(quad_gen.write_label(false).data());} for_loop_stmt_2 ';' {string l = generate_laj_label(); quad_gen.jmp_on_condition($<stringVal>7, false, l); $<stringVal>$ = strdup(l.data());} for_loop_stmt_3 ')' '{' root '}' {quad_gen.jmp_unconditional(string($<stringVal>6)); table.pop_scope(); quad_gen.write_label(true, string($<stringVal>9));}
 ;
 for_loop_stmt_1:
     initialization      {;}
@@ -75,12 +75,12 @@ for_loop_stmt_3:
     assignment          {;}
 ;
 while_loop:
-    WHILE {$<stringVal>$ = strdup(write_label(false).data());} '(' expr ')' {string l = generate_laj_label(); quad_gen.jmp_on_condition($<stringVal>4, false, l); $<stringVal>$ = strdup(l.data()); table.create_scope();} '{' root '}' {quad_gen.jmp_unconditional(string($<stringVal>2)); table.pop_scope(); quad_gen.write_label(true, string($<stringVal>6));}
+    WHILE {$<stringVal>$ = strdup(quad_gen.write_label(false).data());} '(' expr ')' {string l = generate_laj_label(); quad_gen.jmp_on_condition($4, false, l); $<stringVal>$ = strdup(l.data()); table.create_scope();} '{' root '}' {quad_gen.jmp_unconditional(string($<stringVal>2)); table.pop_scope(); quad_gen.write_label(true, string($<stringVal>6));}
 ;
 initialization:
-    CONST type ID '=' expr       {symbol s = table.insert_symbol(string($3),$2,true); quad_gen.assign_op(s,$5);}
+    CONST type ID '=' expr       {symbol s = table.insert_symbol(string($3),$2,true); quad_gen.assign_op(&s,$5);}
     |
-    type ID '=' expr             {symbol s = table.insert_symbol(string($2),$1); quad_gen.assign_op(s,$4);}
+    type ID '=' expr             {symbol s = table.insert_symbol(string($2),$1, false); quad_gen.assign_op(&s,$4);}
 ;
 function_call:
     ID '(' function_call_parameters_optional ')'                                {;}
@@ -138,7 +138,7 @@ if_statement:
         IF '(' expr ')' {string l = generate_laj_label(); quad_gen.jmp_on_condition($3, false, l); $<stringVal>$ = strdup(l.data()); table.create_scope();} '{' root '}' {string l = generate_laj_label(); quad_gen.jmp_unconditional(l); $<stringVal>$ = strdup(l.data()); table.pop_scope(); quad_gen.write_label(true, string($<stringVal>5)); table.create_scope();} ELSE '{' root '}' {table.pop_scope(); quad_gen.write_label(true, string($<stringVal>11));}
 ;
 switch_statement:
-    SWITCH '(' expr ')' '{' switch_body '}'
+    SWITCH '(' ID ')' '{' switch_body '}'
 ;
 switch_body:  case_stmts
     | case_stmts default_stmt
@@ -165,7 +165,7 @@ type:
     |
     BOOL                        {$$ = types::Bool;}
 assignment:
-    ID '=' expr             {symbol s = table.update_symbol(string($1)); quad_gen.assign_op(s,$3);}
+    ID '=' expr             {symbol s = table.update_symbol(string($1)); quad_gen.assign_op(&s,$3);}
 expr:
     expr_OR                         {$$ = $1;}
 expr_OR:
