@@ -104,7 +104,7 @@ symbol *quadruple_generator::concat_op(symbol *op1, symbol *op2)
     symbol *temp = String(op1);
     symbol *temp2 = String(op2);
     symbol *result = new symbol(generate_temp(), max(temp->scope_depth, temp2->scope_depth), types::String, 0, 0);
-    writer << "CONCAT \t" << temp->get_name() << " , " << temp2->get_name() << " , " << result->get_name() << endl;
+    writer << opNames[ops::Concat] << "\t" << temp->get_name() << " , " << temp2->get_name() << " , " << result->get_name() << endl;
     delete temp;
     delete temp2;
     return result;
@@ -115,11 +115,11 @@ void quadruple_generator::jmp_on_condition(symbol *op, bool on_true, string labe
     symbol *temp = Bool(op);
     if (on_true)
     {
-        writer << "JMP_TRUE \t" << temp->get_name() << " , " << label << endl;
+        writer << opNames[ops::Jmp_True] << "\t" << temp->get_name() << " , " << label << endl;
     }
     else
     {
-        writer << "JMP_FALSE\t" << temp->get_name() << " , " << label << endl;
+        writer << opNames[ops::Jmp_False] << "\t" << temp->get_name() << " , " << label << endl;
     }
     delete temp;
     return;
@@ -128,12 +128,28 @@ void quadruple_generator::jmp_on_condition(symbol *op, bool on_true, string labe
 symbol *quadruple_generator::relational_op(ops operation, symbol *op1, symbol *op2)
 {
     // gte x , 3 , t1 
-    symbol *result = new symbol(generate_temp(), max(temp->scope_depth, temp2->scope_depth), types::Bool, 0, 0);
-    if (op1->type == types::Int && op2->type == types::Int)
+    symbol *result = new symbol(generate_temp(), max(op1->scope_depth, op2->scope_depth), types::Bool, 0, 0);
+    if(op1->type == types::Function || op2->type == types::Function){
+        yyerror("Error: Function can't be compared");
+    }
+    if (op1->type != op2->type)
     {
-        
+        if(op1->type == types::String || op2->type == types::String){
+            yyerror("Error: String can't be compared with other types");
+        }
+        if(op1->type == types::Double || op2->type == types::Double){
+            op1 = Double(op1);
+            op2 = Double(op2);
+        }
+        else{
+            op1 = Int(op1);
+            op2 = Int(op2);
+        }
     }
     writer << opNames[operation] << "\t" << op1->get_name() << " , " << op2->get_name() << " , " << result->get_name() << endl;
+    delete op1;
+    delete op2;
+    return result;
 }
 
 symbol *quadruple_generator::Int(symbol *op)
