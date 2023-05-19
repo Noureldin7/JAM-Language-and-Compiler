@@ -3,6 +3,27 @@
 #include <unordered_map>
 #include "enums.hpp"
 using namespace std;
+
+// static private for label and temp names
+static int jal_label_count;
+static int laj_label_count;
+static int temp_count;
+// implement generate_label and generate_temp
+string generate_jal_label()
+{
+    string label =  "J"+to_string(jal_label_count);
+    jal_label_count++;
+    return label;
+}
+string generate_laj_label()
+{
+    return "L"+to_string(laj_label_count++);
+}
+string generate_temp()
+{
+    return "t"+to_string(temp_count++);
+}
+
 class symbol
 {
 public:
@@ -49,8 +70,4 @@ public:
     // Print the local scope
     void print();
     // function that generates label names 
-    string generate_jal_label();
-    string generate_laj_label();
-    // function that generates temporary names
-    string generate_temp();
 };

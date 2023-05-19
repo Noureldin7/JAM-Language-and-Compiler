@@ -1,10 +1,7 @@
 
 #include "symbol_table.hpp"
 #include "enums.hpp"
-// static private for label and temp names
-static int jal_label_count;
-static int laj_label_count;
-static int temp_count;
+
 symbol::symbol()
 {
     this->name = "";
@@ -138,18 +135,3 @@ void symbol_table::print()
     
 }
 
-// implement generate_label and generate_temp
-string symbol_table::generate_jal_label()
-{
-    string label =  "J"+to_string(jal_label_count);
-    jal_label_count++;
-    return label;
-}
-string symbol_table::generate_laj_label()
-{
-    return "L"+to_string(laj_label_count++);
-}
-string symbol_table::generate_temp()
-{
-    return "t"+to_string(temp_count++);
-}
