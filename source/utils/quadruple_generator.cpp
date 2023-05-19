@@ -1,6 +1,6 @@
 #include "quadruple_generator.hpp"
 
-quadruple_generator::quadruple_generator()
+quadruple_generator::quadruple_generator(string filename)
 {
 }
 
