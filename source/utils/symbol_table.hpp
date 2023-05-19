@@ -6,9 +6,8 @@ using namespace std;
 
 class symbol
 {
-private:
-    string name;
 public:
+    string name;
     types type;
     bool is_const;
     bool is_literal;
