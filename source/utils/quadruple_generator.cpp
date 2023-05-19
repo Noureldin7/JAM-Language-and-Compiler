@@ -236,17 +236,24 @@ void quadruple_generator::String(symbol *op)
 }
 
 void quadruple_generator::Bool(symbol *op) {
-    if (op->type == types::Double || op->type == types::Int || op->type == types::String) {
-        string new_name = generate_temp();
-        ops coercion_type = infer_coercion_type(op->type, types::Bool);
-        quadruple_generator::write_quadruple(coercion_type, op->get_name(), "", new_name);
-        op->type = types::Bool;
-        op->name = new_name;
-        op->is_const = true;
-        op->is_literal = false;
-    } else if (op->type == types::Function) {
-        yyerror("Error: Are you retarded?");
+    if (op->type == types::Function) yyerror("Error: Are you retarded?");
+    if (op->type == types::Bool) return;
+    ops coercion_type;
+    if (op->type == types::Double) {
+        coercion_type = Double_To_Bool;
+    } else if (op->type == types::Int) {
+        coercion_type = Int_To_Bool;
+    } else if (op->type == types::String) {
+        coercion_type = String_To_Bool;
+    } else {
+        yyerror("Error: Unknown Type");
     }
+    string new_name = generate_temp();
+    quadruple_generator::write_quadruple(coercion_type, op->get_name(), "", new_name);
+    op->type = types::Bool;
+    op->name = new_name;
+    op->is_const = true;
+    op->is_literal = false;
 }
 
 quadruple_generator::~quadruple_generator()
