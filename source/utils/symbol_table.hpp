@@ -38,7 +38,7 @@ public:
     int get_depth();
     // Insert given symbol into the local scope
     // Returns true on success and false on failure
-    symbol insert_symbol(string name, types type, bool is_const);
+    symbol insert_symbol(string name, types type, bool is_const, vector<types> params = {}, string label = "");
     // Retrieve the given symbol from the closest scope
     // Returns Symbol pointer if found and NULL if not found
     symbol lookup_symbol(string name);

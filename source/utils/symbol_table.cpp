@@ -74,7 +74,7 @@ int symbol_table::get_depth()
 {
     return scopes.size()-1;
 }
-symbol symbol_table::insert_symbol(string name, types type, bool is_const)
+symbol symbol_table::insert_symbol(string name, types type, bool is_const, vector<types> params, string label)
 {
     if((*local_scope).find(name)!=(*local_scope).end())
     {
@@ -83,6 +83,8 @@ symbol symbol_table::insert_symbol(string name, types type, bool is_const)
         return NULL;
     }
     (*local_scope)[name] = symbol(name,this->get_depth(),type,is_const,false);
+    (*local_scope)[name].params = params;
+    (*local_scope)[name].label = label;
     return (*local_scope)[name];
 }
 symbol symbol_table::lookup_symbol(string name)

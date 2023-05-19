@@ -27,6 +27,7 @@
 %type <symbVal> for_loop_stmt_2, expr, expr_OR, expr_AND, expr_bitwise_OR, expr_bitwise_XOR, expr_bitwise_AND, expr_EQ, expr_REL, expr_ADD, expr_MUL, expr_NOT, expr_lit, literal
 %type <typeVal> type
 %type <stringVal> unmatched_if_statement
+%type <stringVal> function_declaration_prototype
 %%
 root:
     root statement           {;}
@@ -83,7 +84,7 @@ initialization:
     type ID '=' expr             {symbol s = table.insert_symbol(string($2),$1, false); quad_gen.assign_op(&s,$4);}
 ;
 function_call:
-    ID '(' function_call_parameters_optional ')'                                {;}
+    ID {} '(' function_call_parameters_optional ')' {}
 ;
 function_call_parameters_optional:
     function_call_parameters
@@ -99,10 +100,10 @@ function_call_parameter:
     ID                                                                          {;}
 ;
 function_declaration:
-    function_declaration_prototype {functional_depth++;} '{' root '}'           {functional_depth--;}
+    function_declaration_prototype {functional_depth++;} '{' root '}' {functional_depth--; table.pop_scope(); write_label(true, string($1));}
 ;
 function_declaration_prototype:
-    VOID ID {cout << $2 <<" function returns void, takes: ";} '(' function_declaration_parameters_optional ')'
+    VOID ID {string l = generate_laj_label(); quad_gen.jmp_unconditional(l); $<stringVal>$ = strdup(l.data());} {$<stringVal>$ = strdup(quad_gen.write_label(false).data());} '(' function_declaration_parameters_optional ')' {$$ = $3;}
     |
     type ID {cout << $2 <<" function returns " << $1 << ", takes: ";} '(' function_declaration_parameters_optional ')'
 ;
