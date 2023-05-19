@@ -8,6 +8,7 @@ class symbol
 {
 public:
     string name;
+    string label;
     types type;
     bool is_const;
     bool is_literal;
