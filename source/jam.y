@@ -72,17 +72,15 @@ statement:
 repeat_until_loop:
     REPEAT '{' root '}' UNTIL '(' cond ')'  {;}
 for_loop:
-    FOR '(' for_loop_stmt_1 ';' for_loop_stmt_2 ';' for_loop_stmt_2 ')' '{' root '}'        {;}
+    FOR '(' for_loop_stmt_1 ';' for_loop_stmt_2 ';' for_loop_stmt_3 ')' '{' root '}'        {;}
 for_loop_stmt_1:
     initialization      {;}
     |
-    for_loop_stmt_2     {;}              
-for_loop_stmt_2:
-    expr                {;}
-    |
     assignment          {;}
-    | 
-                        {;}                                                        
+for_loop_stmt_2:
+    expr                {;}   
+for_loop_stmt_3:
+    assignment          {;}
 while_loop:
     WHILE '(' cond ')' '{' root '}'     {;}
 cond:
