@@ -3,6 +3,7 @@
 #define enums_H__
 enum ops
 {
+    Assign,
     Eq,
     Neq,
     Lt,
@@ -22,6 +23,10 @@ enum ops
     Bit_And,
     Bit_Or,
     Concat,
+    To_Bool,
+    To_String,
+    To_Int,
+    To_Double
 };
 enum types
 {
@@ -32,7 +37,7 @@ enum types
     Function
 };
 const std::string typeNames[] = {"double", "int", "bool", "string", "function"};
-const std::string opNames[] = {"EQ", "NEQ", "LT", "GTE", "LTE", "GT","JMP_TRUE","JMP_FALSE","JMP","ADD", "SUB", "MUL", "DIV", "AND", "OR", "NOT", "ANDB", "ORB","CONCAT"};
+const std::string opNames[] = {"ASS","EQ", "NEQ", "LT", "GTE", "LTE", "GT","JMP_TRUE","JMP_FALSE","JMP","ADD", "SUB", "MUL", "DIV", "AND", "OR", "NOT", "ANDB", "ORB","CONCAT","TO_BOOL","TO_STRING","TO_INT","TO_DOUBLE"};
 //(int) op + 1- 2 * (op % 2) 
 // if(x > 5 || y ==0) -->
 // gt x , 5, t1
