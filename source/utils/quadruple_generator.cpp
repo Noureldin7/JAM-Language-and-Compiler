@@ -187,7 +187,7 @@ quadruple_generator::~quadruple_generator()
 // 4- push_op --> NASHAR
 // 5- pop_op --> NASHAR
 // 6- logical_op(&&,||)-->JOHN
-// 7- relational_op -->(special cases for == and != (plus_op_like)) --> ATAREK
+//? 7- relational_op -->(special cases for == and != (plus_op_like)) --> ATAREK
 // 8- bitwise_op(&,|,^) --> JOHN
 // 9- not_op{logical_op} --> JOHN
 // 10- arth_op(+,-,*,/) --> NOUR
