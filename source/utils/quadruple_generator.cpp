@@ -1,5 +1,19 @@
 #include "quadruple_generator.hpp"
 
+
+void quadruple_generator::write_quadruple(ops operation, symbol *op1, symbol *op2, symbol *dst) {
+    string op1_str = op1 ? op1->get_name() : "";
+    string op2_str = op2 ? op2->get_name() : "";
+    string dst_str = dst ? dst->get_name() : "";
+    write_quadruple(operation, op1_str, op2_str, dst_str);
+}
+
+void quadruple_generator::write_quadruple(ops operation, string op1_str, string op2_str, string dst_str) {
+    string quad = opNames[operation] + " " + op1_str + ", " + op2_str + ", " + dst_str;
+    // writer << quad << "\n";
+    cout << quad << "\n";
+}
+
 void quadruple_generator::Numeric(symbol*op1,symbol*op2){
     // If not arithmetic => yyerror
     if(op1->type==types::String)
