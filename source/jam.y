@@ -177,7 +177,7 @@ return_statement:
     RETURN                                                                      {if (return_stack.top() != types::Void) {yyerror(("Can't cast void to " + typeNames[return_stack.top()]).c_str());} quad_gen.ret();}
 ;
 enum_declaration:
-    ENUM ID {enum_table[current_enum] = vector<string>();} '{' enum_declaration_body '}'
+    ENUM ID {current_enum=string($2); enum_table[current_enum] = vector<string>();} '{' enum_declaration_body '}'
 ;
 enum_declaration_body:
     enum_declaration_body ',' ID                                                          {enum_table[current_enum].push_back(string($3));}
