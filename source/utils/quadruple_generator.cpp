@@ -300,7 +300,6 @@ symbol *quadruple_generator::pop(symbol *op)
 void quadruple_generator::call(symbol *op)
 {
     write_quadruple(ops::Call,op->label,"","", "\t\t");
-    delete op;
 }
 void quadruple_generator::ret()
 {

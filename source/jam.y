@@ -16,7 +16,7 @@
     vector<symbol> current_params_symb;
     stack<types> return_stack;
     string current_enum;
-    stack<symbol> param_stack;
+    stack<symbol*> param_stack;
     symbol current_switch = symbol();
     quadruple_generator quad_gen("quad.txt");
     void warn(symbol*symb)
@@ -103,7 +103,26 @@ initialization:
     type ID '=' expr             {symbol s = table.insert_symbol(string($2),$1, false); quad_gen.assign_op(&s,$4);}
 ;
 function_call:
-    ID {} '(' function_call_parameters_optional ')' {$$ = new symbol("func called", types::Int, true, true);}
+    ID '(' function_call_parameters_optional ')' {
+        symbol func = table.lookup(string($1));
+        if(func.type != types::Function)
+            yyerror(string("Symbol " + string($1) + " is not a function").c_str());
+        types ret_type = func.params[0];
+        for(int i = func.params.size() - 1; i > 0; i++)
+        {
+            symbol* p = param_stack.top();
+            param_stack.pop();
+            quad_gen.cast_to(func.params[i], p);
+            quad_gen.push(p);
+        }
+        quad_gen.call(&func);
+        symbol* s = new symbol(generate_temp(), table.get_depth(), ret_type, true, true);
+        if(t != types::Void)
+        {
+            quad_gen.pop(s);
+        }
+        $$ = s;
+    }
 ;
 function_call_parameters_optional:
     function_call_parameters
@@ -116,7 +135,7 @@ function_call_parameters:
     function_call_parameter
 ;
 function_call_parameter:
-    expr                                                                          {;}
+    expr {param_stack.push($1);}
 ;
 function_declaration:
     FUNCTION return_type ID '(' {return_stack.push($2); current_params = vector<types>(); current_params_symb = vector<symbol>(); current_params.push_back($2); string l = generate_laj_label(); quad_gen.jmp_unconditional(l); $<stringVal>$ = strdup(l.data());} {$<stringVal>$ = strdup(quad_gen.write_label(false).data());} function_declaration_parameters_optional ')' {table.insert_symbol(string($3), types::Function, false, current_params, string($<stringVal>6)); table.create_scope(); for (symbol s : current_params_symb){symbol temp = table.insert_symbol(s.name, s.type, false); quad_gen.pop(&temp);} functional_depth++;} '{' root return_statement ';' '}' {functional_depth--; return_stack.pop(); table.pop_scope(); quad_gen.write_label(true, string($<stringVal>5));}
