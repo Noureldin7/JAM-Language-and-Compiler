@@ -8,7 +8,7 @@
     using namespace std;
     int yylex(void);
     // void yyerror(char const *);
-    symbol_table table;
+    symbol_table table("symbol_table.txt");
     extern FILE* yyin;
     int functional_depth = 0;
     unordered_map<string,vector<string>> enum_table;
@@ -36,7 +36,7 @@
 %type <symbVal> function_declaration_parameter
 %%
 root:
-    root statement           {;}
+    root statement           {table.print();}
     |
     ;
 statement:
