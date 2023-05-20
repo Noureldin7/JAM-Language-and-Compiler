@@ -142,7 +142,7 @@ unmatched_if_statement:
         IF '(' expr ')' {string l = generate_laj_label(); quad_gen.jmp_on_condition($3, false, l); $<stringVal>$ = strdup(l.data()); table.create_scope();} '{' root '}' {table.pop_scope(); $$ = $<stringVal>5;}
 ;
 switch_statement:
-    SWITCH {if (current_switch.name != "") yyerror("Nested switch cases aren't allowed");} '(' ID ')' {current_switch = table.lookup_symbol(string($4));} '{' switch_body '}' {current_switch = symbol();}
+    SWITCH {if (current_switch.name != "") yyerror("Nested switch cases aren't allowed");} '(' ID ')' {current_switch = table.lookup_symbol(string($4)); current_switch.label = generate_laj_label();} '{' switch_body '}' {quad_gen.write_label(true, current_switch.label); current_switch = symbol();}
 ;
 switch_body:  case_stmts
     | case_stmts default_stmt
@@ -150,7 +150,7 @@ switch_body:  case_stmts
 case_stmts: case_stmts case_stmt
         | case_stmt
 ;
-case_stmt: CASE literal {symbol* s = quad_gen.relational_op(ops::Neq, new symbol(&current_switch), $2); string l = generate_laj_label(); $<stringVal>$ = strdup(l.data()); quad_gen.jmp_on_condition(s, true, l); table.create_scope();} ':' root BREAK ';' {quad_gen.write_label(true, string($<stringVal>3)); table.pop_scope();}
+case_stmt: CASE literal {symbol* s = quad_gen.relational_op(ops::Neq, new symbol(&current_switch), $2); string l = generate_laj_label(); $<stringVal>$ = strdup(l.data()); quad_gen.jmp_on_condition(s, true, l); table.create_scope();} ':' root BREAK ';' {quad_gen.jmp_unconditional(current_switch.label); quad_gen.write_label(true, string($<stringVal>3)); table.pop_scope();}
 ;
 default_stmt: DEFAULT {table.create_scope();} ':' root BREAK ';' {table.pop_scope();}
 ;
