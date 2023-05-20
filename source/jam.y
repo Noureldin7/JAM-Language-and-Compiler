@@ -106,7 +106,7 @@ function_call_parameter:
     ID                                                                          {;}
 ;
 function_declaration:
-    FUNCTION return_type ID '(' {return_stack.push($1); current_params = vector<types>(); current_params_symb = vector<symbol>(); current_params.push_back($1); string l = generate_laj_label(); quad_gen.jmp_unconditional(l); $<stringVal>$ = strdup(l.data());} {$<stringVal>$ = strdup(quad_gen.write_label(false).data());} function_declaration_parameters_optional ')' {table.insert_symbol(string($2), types::Function, false, current_params, string($<stringVal>5)); table.create_scope(); for (symbol s : current_params_symb){symbol temp = table.insert_symbol(s.name, s.type, false); quad_gen.pop(&temp);} functional_depth++;} '{' root return_statement ';' '}' {functional_depth--; return_stack.pop(); table.pop_scope(); quad_gen.write_label(true, string($<stringVal>4));}
+    FUNCTION return_type ID '(' {return_stack.push($2); current_params = vector<types>(); current_params_symb = vector<symbol>(); current_params.push_back($2); string l = generate_laj_label(); quad_gen.jmp_unconditional(l); $<stringVal>$ = strdup(l.data());} {$<stringVal>$ = strdup(quad_gen.write_label(false).data());} function_declaration_parameters_optional ')' {table.insert_symbol(string($3), types::Function, false, current_params, string($<stringVal>6)); table.create_scope(); for (symbol s : current_params_symb){symbol temp = table.insert_symbol(s.name, s.type, false); quad_gen.pop(&temp);} functional_depth++;} '{' root return_statement ';' '}' {functional_depth--; return_stack.pop(); table.pop_scope(); quad_gen.write_label(true, string($<stringVal>5));}
 ;
 return_type:
     VOID {$$ = types::Void;}
