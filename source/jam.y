@@ -242,9 +242,9 @@ literal:
     |
     STRING_VAL                      {$$ = new symbol($1,table.get_depth(),types::String,true,true);}
     |
-    BOOL_FALSE                      {$$ = new symbol($1,table.get_depth(),types::Bool,true,true);}
+    BOOL_FALSE                      {$$ = new symbol("False",table.get_depth(),types::Bool,true,true);}
     |
-    BOOL_TRUE                      {$$ = new symbol($1,table.get_depth(),types::Bool,true,true);}
+    BOOL_TRUE                      {$$ = new symbol("True",table.get_depth(),types::Bool,true,true);}
     |
     ID '.' ID                       {
                                     auto v = enum_table.find(string($1));
