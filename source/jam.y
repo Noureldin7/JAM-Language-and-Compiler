@@ -16,6 +16,7 @@
     vector<symbol> current_params_symb;
     stack<types> return_stack;
     string current_enum;
+    stack<symbol> param_stack;
     symbol current_switch = symbol();
     quadruple_generator quad_gen("quad.txt");
     void warn(symbol*symb)
@@ -45,6 +46,7 @@
 %type <stringVal> unmatched_if_statement
 %type <typeVal> return_type
 %type <symbVal> function_declaration_parameter
+%type <symbVal> function_call
 %%
 root:
     root statement           {table.print();}
@@ -266,6 +268,8 @@ literal:
                                     }
     |
     ID                           {$$ = new symbol(table.lookup_symbol(string($1)));}
+    |
+    function_call                  {$$ = $1;}
 %%
 
 int main(int argc, char * argv[])
