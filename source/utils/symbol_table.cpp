@@ -39,25 +39,26 @@ string symbol::get_name()
         return name+"_"+to_string(scope_depth);
     }
 }
-void symbol::print()
+string symbol::print()
 {
     if(is_const)
     {
-        cout<<"Constant "<<typeNames[type]+" "<<name<<endl;
+        return "Constant "+typeNames[type]+" "+this->get_name()+"\n";
     }
     else
     {
-        cout<<typeNames[type]+" "<<name<<endl;
+        return typeNames[type]+" "+this->get_name()+"\n";
     }
 }
-symbol_table::symbol_table()
+symbol_table::symbol_table(string filename)
 {
-    scopes = vector(1,unordered_map<string,symbol>());
+    writer = ofstream(filename);
+    scopes = vector(1,map<string,symbol>());
     local_scope = &scopes.back();
 }
 void symbol_table::create_scope()
 {
-    scopes.push_back(unordered_map<string,symbol>());
+    scopes.push_back(map<string,symbol>());
     local_scope = &scopes.back();
 }
 void symbol_table::pop_scope()
@@ -149,12 +150,17 @@ symbol symbol_table::update_symbol(string name)
 // }
 void symbol_table::print()
 {
-    cout<<"##########"<<"Table"<<"##########"<<endl;
-    for (auto itr = (*local_scope).begin(); itr != (*local_scope).end(); itr++)
+    writer<<"##########"<<"Table"<<"##########"<<endl;
+    for (int i = 0; i <= this->get_depth(); i++)
     {
-        (*itr).second.print();
+        auto scope = scopes[i];
+        for (auto itr = scope.begin(); itr != scope.end(); itr++)
+        {
+            writer<<(*itr).second.print();
+        }
     }
-    cout<<"#########################"<<endl;
+    
+    writer<<"#########################"<<endl;
     
 }
 symbol_table::~symbol_table(){

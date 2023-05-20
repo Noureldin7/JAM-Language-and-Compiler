@@ -1,6 +1,8 @@
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include <unordered_map>
+#include <map>
 #include "enums.hpp"
 using namespace std;
 
@@ -20,17 +22,19 @@ public:
     symbol(symbol*);
     symbol(string name, int scope_depth, types type, bool is_const, bool is_literal, bool is_used=false);
     string get_name();
-    void print();
+    string print();
 };
 class symbol_table
 {
+    // Output File
+    ofstream writer;
     // Scope vector
-    vector<unordered_map<string, symbol>> scopes;
+    vector<map<string, symbol>> scopes;
     // Pointer to last scope in scope vector
-    unordered_map<string, symbol>* local_scope;
+    map<string, symbol>* local_scope;
 public:
     // Initializes the scope vector
-    symbol_table();
+    symbol_table(string filename);
     // Push new scope into scope vector
     void create_scope();
     // Pop last scope in scope vector
