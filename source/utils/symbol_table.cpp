@@ -74,7 +74,8 @@ void symbol_table::pop_scope()
     {
         if((*itr).second.is_used==false)
         {
-            yywarn(("Unused Variable \""+(*itr).second.name+"\"").c_str());
+            string var = (*itr).second.type==types::Function?"Function":"Variable";
+            yywarn(("Unused "+var+" \""+(*itr).second.name+"\"").c_str());
         }
     }
     scopes.pop_back();
