@@ -111,7 +111,13 @@ function_declaration:
 return_type:
     VOID {$$ = types::Void;}
     |
-    type {$$ = $1;}
+    INT                         {$$ = types::Int;}
+    |
+    DOUBLE                      {$$ = types::Double;}
+    |
+    STRING                      {$$ = types::String;}
+    |
+    BOOL                        {$$ = types::Bool;}
 ;
 function_declaration_parameters_optional:
     function_declaration_parameters                                             {;}
