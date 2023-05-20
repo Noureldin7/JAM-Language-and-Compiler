@@ -12,6 +12,8 @@ whitespace      [ \t\n\r]
 alpha           [a-zA-z]  
 string          \"({digit}|\.|{alpha})*\"
 %%
+true                                                        {return BOOL_TRUE;}
+false                                                       {return BOOL_FALSE;}
 const                                                       {return CONST;}
 int                                                         {return INT;}
 double                                                      {return DOUBLE;}
