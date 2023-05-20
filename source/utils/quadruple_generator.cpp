@@ -319,6 +319,31 @@ string quadruple_generator::write_label(bool is_laj, string label)
     return label_jal;
 }
 
+void quadruple_generator::cast_to(types target, symbol *op)
+{
+    switch (target)
+    {
+    case types::Int:
+        Int(op);
+        break;
+    case types::Double:
+        Double(op);
+        break;
+    case types::Bool:
+        Bool(op);
+        break;
+    case types::String:
+        String(op);
+        break;
+    case types::Function:
+        yyerror("Cannot cast to function");
+        break;
+    default:
+        yyerror("Unknown Type");
+        break;
+    }
+}
+
 void quadruple_generator::Int(symbol *op)
 {
     if (op->type == types::Int)
