@@ -25,11 +25,11 @@ void quadruple_generator::write_quadruple(ops operation, string op1_str, string 
 void quadruple_generator::Numeric(symbol *op1, symbol *op2)
 {
     // If not arithmetic => yyerror
-    if (op1->type == types::String || op1->type == types::Function)
+    if (op1->type == types::String || op1->type == types::Function || op1->type == types::Void)
     {
         yyerror(("Invalid type " + typeNames[op1->type]).c_str());
     }
-    if (op2->type == types::String || op2->type == types::Function)
+    if (op2->type == types::String || op2->type == types::Function || op2->type == types::Void)
     {
         yyerror(("Invalid type " + typeNames[op2->type]).c_str());
     }
@@ -77,11 +77,11 @@ void quadruple_generator::Numeric(symbol *op1, symbol *op2)
 }
 
 void quadruple_generator::BitAccessible(symbol* op1, symbol* op2) {
-    if (op1->type == types::String || op1->type == types::Function || op1->type == types::Double)
+    if (op1->type == types::String || op1->type == types::Function || op1->type == types::Double || op1->type == types::Void)
     {
         yyerror(("Invalid type " + typeNames[op1->type]).c_str());
     }
-    if (op2->type == types::String || op2->type == types::Function || op2->type == types::Double)
+    if (op2->type == types::String || op2->type == types::Function || op2->type == types::Double || op2->type == types::Void)
     {
         yyerror(("Invalid type " + typeNames[op2->type]).c_str());
     }
@@ -119,6 +119,10 @@ void quadruple_generator::assign_op(symbol *dst, symbol *src)
     // Integer => ALL but String
     // Double => ALL but String
     // Bool => ALL
+    if (dst->type == types::Void)
+    {
+        yyerror("Cannot assign to void");
+    }
     if (dst->type == types::String)
     {
         String(src);
@@ -219,7 +223,7 @@ symbol *quadruple_generator::relational_op(ops operation, symbol *op1, symbol *o
 {
     // gte x , 3 , t1
     symbol *result = new symbol(generate_temp(), max(op1->scope_depth, op2->scope_depth), types::Bool, true, true);
-    if (op1->type == types::Function || op2->type == types::Function)
+    if (op1->type == types::Function || op2->type == types::Function || op1->type == types::Void || op2->type == types::Void)
     {
         yyerror("Error: Function can't be compared");
     }
@@ -267,6 +271,9 @@ void quadruple_generator::Double(symbol *op)
         break;
     case types::Function:
         yyerror("Cannot cast function to double");
+        break;
+    case types::Void:
+        yyerror("Cannot cast void to double");
         break;
     default:
         yyerror("Unknown Type");
@@ -337,6 +344,9 @@ void quadruple_generator::cast_to(types target, symbol *op)
     case types::Function:
         yyerror("Cannot cast to function");
         break;
+    case types::Void:
+        yyerror("Cannot cast to void");
+        break;
     default:
         yyerror("Unknown Type");
         break;
@@ -364,6 +374,9 @@ void quadruple_generator::Int(symbol *op)
         break;
     case types::Function:
         yyerror("Cannot cast function to int");
+        break;
+    case types::Void:
+        yyerror("Cannot cast void to int");
         break;
     default:
         yyerror("Unknown Type");
@@ -394,6 +407,9 @@ void quadruple_generator::String(symbol *op)
     case types::Function:
         yyerror("Error: Can't convert function to string");
         break;
+    case types::Void:
+        yyerror("Error: Can't convert void to string");
+        break;
     default:
         yyerror("Error: Unknown Type");
         break;
@@ -422,6 +438,9 @@ void quadruple_generator::Bool(symbol *op)
         break;
     case types::Function:
         yyerror("Error: Are you retarded?");
+        break;
+    case types::Void:
+        yyerror("Error: Can't convert void to bool");
         break;
     default:
         yyerror("Error: Unknown Type");
