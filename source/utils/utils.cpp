@@ -1,12 +1,12 @@
 #include "utils.hpp"
 void yyerror(char const *s){
     extern int yylineno;
-    fprintf(stderr, "%s near line %d\n",s,yylineno);
+    fprintf(stderr, "Error: %s near line %d\n",s,yylineno);
     exit(-1);
 }
 void yywarn(char const *s){
     extern int yylineno;
-    fprintf(stderr, "%s near line %d\n",s,yylineno);
+    fprintf(stderr, "Warning: %s near line %d\n",s,yylineno);
     // exit(-1);
 }
 // implement generate_label and generate_temp
