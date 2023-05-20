@@ -103,7 +103,7 @@ initialization:
     type ID '=' expr             {symbol s = table.insert_symbol(string($2),$1, false); quad_gen.assign_op(&s,$4);}
 ;
 function_call:
-    ID {} '(' function_call_parameters_optional ')' {}
+    ID {} '(' function_call_parameters_optional ')' {$$ = new symbol("func called", types::Int, true, true);}
 ;
 function_call_parameters_optional:
     function_call_parameters
