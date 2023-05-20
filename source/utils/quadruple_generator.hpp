@@ -13,6 +13,7 @@ public:
     // these print conversion quadruples to file
     // assuming the input op is convertible to this type
     // otherwise it throws a yyerror
+    void cast_to(types target, symbol* op);
     void Int(symbol* op);
     void Double(symbol* op);
     void String(symbol* op);
