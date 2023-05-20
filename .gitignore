@@ -3,3 +3,5 @@ bin/*.out
 bin/*.tab.* 
 bin/*.yy.c
 bin/*.exe
+quad.txt
+symbol_table.txt

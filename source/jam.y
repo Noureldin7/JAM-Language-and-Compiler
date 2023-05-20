@@ -21,11 +21,11 @@
     quadruple_generator quad_gen("quad.txt");
     void warn(symbol*symb)
     {
-        if(symb->name=="False"||symb->name=="0")
+        if(symb->name=="false"||symb->name=="0")
         {
             yywarn("Condition is always false");
         }
-        if(symb->name=="True"||symb->name=="1")
+        if(symb->name=="true"||symb->name=="1")
         {
             yywarn("Condition is always true");
         }
@@ -41,7 +41,20 @@
 %token IF ELSE SWITCH CASE DEFAULT BREAK
 %token BOOL_TRUE BOOL_FALSE FUNCTION
 %token <stringVal> INT_VAL <stringVal> ID <stringVal> DOUBLE_VAL <stringVal> STRING_VAL
-%type <symbVal> for_loop_stmt_2, expr, expr_OR, expr_AND, expr_bitwise_OR, expr_bitwise_XOR, expr_bitwise_AND, expr_EQ, expr_REL, expr_ADD, expr_MUL, expr_NOT, expr_lit, literal
+%type <symbVal> for_loop_stmt_2
+%type <symbVal> expr
+%type <symbVal> expr_OR
+%type <symbVal> expr_AND
+%type <symbVal> expr_bitwise_OR
+%type <symbVal> expr_bitwise_XOR
+%type <symbVal> expr_bitwise_AND
+%type <symbVal> expr_EQ
+%type <symbVal> expr_REL
+%type <symbVal> expr_ADD
+%type <symbVal> expr_MUL
+%type <symbVal> expr_NOT
+%type <symbVal> expr_lit
+%type <symbVal> literal
 %type <typeVal> type
 %type <stringVal> unmatched_if_statement
 %type <typeVal> return_type
@@ -61,9 +74,9 @@ statement:
     |
     function_declaration
     |
-    function_call ';'
+    function_call ';'           {delete $1;}
     |
-    return_statement ';' {if(functional_depth < 1) yyerror(strdup(string("Return statement outside function scope").data()));}
+    return_statement ';'        {if(functional_depth < 1) yyerror(strdup(string("Return statement outside function scope").data()));}
     |
     enum_declaration ';'
     |
@@ -104,11 +117,11 @@ initialization:
 ;
 function_call:
     ID '(' function_call_parameters_optional ')' {
-        symbol func = table.lookup(string($1));
+        symbol func = table.lookup_symbol(string($1));
         if(func.type != types::Function)
             yyerror(string("Symbol " + string($1) + " is not a function").c_str());
         types ret_type = func.params[0];
-        for(int i = func.params.size() - 1; i > 0; i++)
+        for(int i = func.params.size() - 1; i > 0; i--)
         {
             symbol* p = param_stack.top();
             param_stack.pop();
@@ -117,7 +130,7 @@ function_call:
         }
         quad_gen.call(&func);
         symbol* s = new symbol(generate_temp(), table.get_depth(), ret_type, true, true);
-        if(t != types::Void)
+        if(ret_type != types::Void)
         {
             quad_gen.pop(s);
         }
@@ -274,9 +287,9 @@ literal:
     |
     STRING_VAL                      {$$ = new symbol($1,table.get_depth(),types::String,true,true);}
     |
-    BOOL_FALSE                      {$$ = new symbol("False",table.get_depth(),types::Bool,true,true);}
+    BOOL_FALSE                      {$$ = new symbol("false",table.get_depth(),types::Bool,true,true);}
     |
-    BOOL_TRUE                      {$$ = new symbol("True",table.get_depth(),types::Bool,true,true);}
+    BOOL_TRUE                      {$$ = new symbol("true",table.get_depth(),types::Bool,true,true);}
     |
     ID '.' ID                       {
                                     auto v = enum_table.find(string($1));
