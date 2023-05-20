@@ -10,7 +10,7 @@ digit           [0-9]
 symbols         [-+*/=&^!|(){};:,\.]
 whitespace      [ \t\n\r]
 alpha           [a-zA-z]  
-string          \"({digit}|\.|{alpha})*\"
+string          \"(?:\\.|[^\\"])*\"
 %%
 true                                                        {return BOOL_TRUE;}
 false                                                       {return BOOL_FALSE;}
