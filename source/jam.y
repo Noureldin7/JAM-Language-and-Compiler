@@ -27,6 +27,7 @@
 // Reserved Words
 %token FOR WHILE REPEAT UNTIL EQ NE GT LT GTE LTE AND OR CONST INT DOUBLE STRING BOOL VOID RETURN ENUM
 %token IF ELSE SWITCH CASE DEFAULT BREAK
+%token BOOL_TRUE BOOL_FALSE
 %token <stringVal> INT_VAL <stringVal> ID <stringVal> DOUBLE_VAL <stringVal> STRING_VAL
 %type <symbVal> for_loop_stmt_2, expr, expr_OR, expr_AND, expr_bitwise_OR, expr_bitwise_XOR, expr_bitwise_AND, expr_EQ, expr_REL, expr_ADD, expr_MUL, expr_NOT, expr_lit, literal
 %type <typeVal> type
@@ -108,7 +109,7 @@ function_declaration:
     return_type ID {return_stack.push($1); current_params = vector<types>(); current_params_symb = vector<symbol>(); current_params.push_back($1); string l = generate_laj_label(); quad_gen.jmp_unconditional(l); $<stringVal>$ = strdup(l.data());} {$<stringVal>$ = strdup(quad_gen.write_label(false).data());} '(' function_declaration_parameters_optional ')' {table.insert_symbol(string($2), types::Function, false, current_params, string($<stringVal>4)); table.create_scope(); for (symbol s : current_params_symb){symbol temp = table.insert_symbol(s.name, s.type, false); quad_gen.pop(&temp);} functional_depth++;} '{' root return_statement'}' {functional_depth--; return_stack.pop(); quad_gen.ret(); table.pop_scope(); quad_gen.write_label(true, string($<stringVal>3));}
 ;
 return_type:
-    VOID {$$ = types::VOID;}
+    VOID {$$ = types::Void;}
     |
     type {$$ = $1;}
 ;
@@ -126,7 +127,7 @@ function_declaration_parameter:
     type ID                                                                     {current_params.push_back($1); current_params_symb.push_back(symbol(string($2), 0, $1, false, false));}
 ;
 return_statement:
-    RETURN expr                                                                 {cast_to(return_stack.top(), $2); quad_gen.push($2); quad_gen.ret();}
+    RETURN expr                                                                 {quad_gen.cast_to(return_stack.top(), $2); quad_gen.push($2); quad_gen.ret();}
     |
     RETURN                                                                      {if (return_stack.top() != types::Void) {yyerror(("Can't cast void to " + typeNames[return_stack.top()]).c_str());} quad_gen.ret();}
 ;
@@ -240,6 +241,10 @@ literal:
     DOUBLE_VAL                      {$$ = new symbol($1,table.get_depth(),types::Double,true,true);}
     |
     STRING_VAL                      {$$ = new symbol($1,table.get_depth(),types::String,true,true);}
+    |
+    BOOL_FALSE                      {$$ = new symbol($1,table.get_depth(),types::Bool,true,true);}
+    |
+    BOOL_TRUE                      {$$ = new symbol($1,table.get_depth(),types::Bool,true,true);}
     |
     ID '.' ID                       {
                                     auto v = enum_table.find(string($1));
