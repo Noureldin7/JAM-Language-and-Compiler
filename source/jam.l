@@ -40,6 +40,7 @@ default                                                     {return DEFAULT;}
 void                                                        {return VOID;}
 return                                                      {return RETURN;}
 enum                                                        {return ENUM;}
+function                                                    {return FUNCTION;}
 (ඞ[^\n\r]*)                                                 ;
 {symbols}                                                   {return *yytext;}
 {string}                                                    {

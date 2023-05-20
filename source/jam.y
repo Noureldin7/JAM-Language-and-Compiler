@@ -27,7 +27,7 @@
 // Reserved Words
 %token FOR WHILE REPEAT UNTIL EQ NE GT LT GTE LTE AND OR CONST INT DOUBLE STRING BOOL VOID RETURN ENUM
 %token IF ELSE SWITCH CASE DEFAULT BREAK
-%token BOOL_TRUE BOOL_FALSE
+%token BOOL_TRUE BOOL_FALSE FUNCTION
 %token <stringVal> INT_VAL <stringVal> ID <stringVal> DOUBLE_VAL <stringVal> STRING_VAL
 %type <symbVal> for_loop_stmt_2, expr, expr_OR, expr_AND, expr_bitwise_OR, expr_bitwise_XOR, expr_bitwise_AND, expr_EQ, expr_REL, expr_ADD, expr_MUL, expr_NOT, expr_lit, literal
 %type <typeVal> type
@@ -106,7 +106,7 @@ function_call_parameter:
     ID                                                                          {;}
 ;
 function_declaration:
-    return_type ID '(' {return_stack.push($1); current_params = vector<types>(); current_params_symb = vector<symbol>(); current_params.push_back($1); string l = generate_laj_label(); quad_gen.jmp_unconditional(l); $<stringVal>$ = strdup(l.data());} {$<stringVal>$ = strdup(quad_gen.write_label(false).data());} function_declaration_parameters_optional ')' {table.insert_symbol(string($2), types::Function, false, current_params, string($<stringVal>5)); table.create_scope(); for (symbol s : current_params_symb){symbol temp = table.insert_symbol(s.name, s.type, false); quad_gen.pop(&temp);} functional_depth++;} '{' root return_statement ';' '}' {functional_depth--; return_stack.pop(); table.pop_scope(); quad_gen.write_label(true, string($<stringVal>4));}
+    FUNCTION return_type ID '(' {return_stack.push($1); current_params = vector<types>(); current_params_symb = vector<symbol>(); current_params.push_back($1); string l = generate_laj_label(); quad_gen.jmp_unconditional(l); $<stringVal>$ = strdup(l.data());} {$<stringVal>$ = strdup(quad_gen.write_label(false).data());} function_declaration_parameters_optional ')' {table.insert_symbol(string($2), types::Function, false, current_params, string($<stringVal>5)); table.create_scope(); for (symbol s : current_params_symb){symbol temp = table.insert_symbol(s.name, s.type, false); quad_gen.pop(&temp);} functional_depth++;} '{' root return_statement ';' '}' {functional_depth--; return_stack.pop(); table.pop_scope(); quad_gen.write_label(true, string($<stringVal>4));}
 ;
 return_type:
     VOID {$$ = types::Void;}
