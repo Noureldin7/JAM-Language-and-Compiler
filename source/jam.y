@@ -18,6 +18,17 @@
     string current_enum;
     symbol current_switch = symbol();
     quadruple_generator quad_gen("quad.txt");
+    void warn(symbol*symb)
+    {
+        if(symb->name=="False"||symb->name=="0")
+        {
+            yywarn("Condition is always false");
+        }
+        if(symb->name=="True"||symb->name=="1")
+        {
+            yywarn("Condition is always true");
+        }
+    }
 %}
 %union {
     types typeVal;
@@ -145,7 +156,7 @@ if_statement:
         unmatched_if_statement {string l = generate_laj_label(); quad_gen.jmp_unconditional(l); $<stringVal>$ = strdup(l.data()); quad_gen.write_label(true, string($1)); table.create_scope();} ELSE '{' root '}' {table.pop_scope(); quad_gen.write_label(true, string($<stringVal>2));}
 ;
 unmatched_if_statement:
-        IF '(' expr ')' {string l = generate_laj_label(); quad_gen.jmp_on_condition($3, false, l); $<stringVal>$ = strdup(l.data()); table.create_scope();} '{' root '}' {table.pop_scope(); $$ = $<stringVal>5;}
+        IF '(' expr ')' {warn($3); string l = generate_laj_label(); quad_gen.jmp_on_condition($3, false, l); $<stringVal>$ = strdup(l.data()); table.create_scope();} '{' root '}' {table.pop_scope(); $$ = $<stringVal>5;}
 ;
 switch_statement:
     SWITCH {if (current_switch.name != "") yyerror("Nested switch cases aren't allowed");} '(' ID ')' {current_switch = table.lookup_symbol(string($4)); current_switch.label = generate_laj_label();} '{' switch_body '}' {quad_gen.write_label(true, current_switch.label); current_switch = symbol();}
